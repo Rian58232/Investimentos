@@ -533,21 +533,54 @@ function renderAll(){renderHist();upd();}
 
 // O erro acontece se estiver apenas "function fetchFII()"
 // A correção é adicionar o "async" antes:
-async function fetchFII() { 
+async function fetchFII() {
   const proxy = 'https://investimentos.rian1-meliodas.workers.dev'; 
 
   try {
-    // Agora o await vai funcionar aqui dentro
+    // O 'await' só funciona porque colocamos 'async' lá na primeira linha
     const resposta = await fetch(proxy, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-3-haiku-20240307', 
         max_tokens: 600,
-        system: 'Responda APENAS JSON: {"mxrf11":{"preco":number,"dy_mensal_pct":number},"taxas":{"cdi_aa":number}}',
-        messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI.' }]
+        system: 'Responda APENAS JSON: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',
+        messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
       })
     });
+
+    if(!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
+    
+    const dados = await resposta.json();
+    
+    // Pegando o texto da resposta do Claude
+    const textoAI = dados.content[0].text;
+    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
+    if(!jsonMatch) throw new Error('JSON não encontrado');
+    
+    const p = JSON.parse(jsonMatch[0]);
+
+    // Atualiza as variáveis que o seu gráfico usa
+    fiiP = p.mxrf11.preco;
+    dyM = p.mxrf11.dy_mensal_pct / 100;
+    cdiA = p.taxas?.cdi_aa || 10.5;
+    apiOk = true;
+
+    // Atualiza a interface
+    document.getElementById('api-alert').style.display = 'none';
+    document.getElementById('data-src').textContent = 'tempo real';
+    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
+    
+    // Chama a função que desenha o gráfico/tabela
+    refreshDisplay();
+
+  } catch(e) {
+    console.error('Falha na atualização:', e);
+    apiOk = false;
+    document.getElementById('api-alert').style.display = 'flex';
+    refreshDisplay();
+  }
+}
 
     if(!resposta.ok) throw new Error('Erro: ' + resposta.status);
     
