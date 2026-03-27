@@ -571,8 +571,6 @@ async function fetchFII() {
     apiOk = false;
     document.getElementById('api-alert').style.display = 'flex';
     refreshDisplay();
-  }
-}
     
     const d = await res.json();
     // ... resto do seu código de carregar os dados
@@ -610,7 +608,7 @@ async function fetchFII() {
     refreshDisplay();
   }
 }
-
+  
 async function doRefresh(){
   const b=document.getElementById('btn-ref');
   b.disabled=true;b.textContent='Buscando...';
