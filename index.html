@@ -1,29 +1,35 @@
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>MXRF11 — Diário de Investimentos</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
---bg0:#0b0d10;--bg1:#111418;--bg2:#181c22;--bg3:#1f242d;--bg4:#272d38;--bg5:#2f3645;
---bdr:#252b36;--bdr2:#343d4e;
---g:#22c55e;--g2:#16a34a;
---g-bg:rgba(34,197,94,.08);--g-bg2:rgba(34,197,94,.14);
---red:#f87171;--red-bg:rgba(248,113,113,.1);
---blue:#60a5fa;--blue-bg:rgba(96,165,250,.1);
---amber:#fbbf24;--amber-bg:rgba(251,191,36,.1);
---pink:#f472b6;
---t1:#eef0f4;--t2:#8b95a6;--t3:#4e5769;--t4:#333b4a;
---mono:'SF Mono','Fira Code','Roboto Mono',monospace;
---sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
---r:10px;--rl:14px;
+  --bg0:#0b0d10;--bg1:#111418;--bg2:#181c22;--bg3:#1f242d;--bg4:#272d38;--bg5:#2f3645;
+  --bdr:#252b36;--bdr2:#343d4e;
+  --g:#22c55e;--g2:#16a34a;
+  --g-bg:rgba(34,197,94,.08);--g-bg2:rgba(34,197,94,.14);
+  --red:#f87171;--red-bg:rgba(248,113,113,.1);
+  --blue:#60a5fa;--blue-bg:rgba(96,165,250,.1);
+  --amber:#fbbf24;--amber-bg:rgba(251,191,36,.1);
+  --pink:#f472b6;
+  --t1:#eef0f4;--t2:#8b95a6;--t3:#4e5769;--t4:#333b4a;
+  --mono:'SF Mono','Fira Code','Roboto Mono',monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --r:10px;--rl:14px;
 }
-html,body{background:var(--bg0);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.5;}
-.wrap{background:var(--bg0);min-height:100vh;padding:.5rem 0 5rem;}
+html,body{background:var(--bg0);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.5;min-height:100vh;}
+.page{max-width:900px;margin:0 auto;padding:1.5rem 1rem 5rem;}
 .sec{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin:2rem 0 .85rem;display:flex;align-items:center;gap:10px;}
 .sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
 button{font-family:var(--sans);cursor:pointer;border-radius:8px;transition:all .15s;font-size:13px;font-weight:500;}
 .btn-g{background:var(--g);color:#000;border:none;padding:9px 20px;font-weight:700;}
 .btn-g:hover{background:#16c057;}.btn-g:active{transform:scale(.97);}
 .btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--bdr2);padding:7px 14px;}
-.btn-ghost:hover{background:var(--bg3);color:var(--t1);}.btn-ghost:active{transform:scale(.97);}
+.btn-ghost:hover{background:var(--bg3);color:var(--t1);}
 .btn-del{background:none;border:none;color:var(--t4);padding:5px 8px;font-size:16px;line-height:1;}
 .btn-del:hover{color:var(--red);background:var(--red-bg);}
 .btn-sm{background:transparent;color:var(--t3);border:1px solid var(--bdr);padding:4px 10px;font-size:11px;border-radius:6px;}
@@ -51,21 +57,22 @@ button{font-family:var(--sans);cursor:pointer;border-radius:8px;transition:all .
 .field select option{background:var(--bg3);}
 .chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:700;}
 .chip-g{background:var(--g-bg2);color:var(--g);}
-.chip-r{background:var(--red-bg);color:var(--red);}
-.chip-am{background:var(--amber-bg);color:var(--amber);}
-.sl-row{display:flex;align-items:center;gap:12px;margin-bottom:.7rem;}
-.sl-lbl{font-size:13px;color:var(--t2);flex:1;min-width:0;}
-.sl-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--t1);width:100px;text-align:right;flex-shrink:0;}
 input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:var(--bg5);outline:none;cursor:pointer;min-width:0;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--g);cursor:pointer;box-shadow:0 0 0 3px rgba(34,197,94,.2);}
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--g);cursor:pointer;border:none;}
+.sl-row{display:flex;align-items:center;gap:12px;margin-bottom:.7rem;}
+.sl-lbl{font-size:13px;color:var(--t2);flex:1;min-width:0;}
+.sl-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--t1);width:100px;text-align:right;flex-shrink:0;}
 .leg{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;}
 .leg span{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);}
 .dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;}
 .info-box{border-radius:var(--r);padding:.85rem 1rem;font-size:12px;color:var(--t2);line-height:1.6;}
 .info-box.green{background:var(--g-bg);border:1px solid rgba(34,197,94,.15);}
 .info-box.amber{background:var(--amber-bg);border:1px solid rgba(251,191,36,.15);}
-.info-box.red{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);}
+.info-box.red-box{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);}
+.alert-bar{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:var(--r);padding:.7rem 1rem;font-size:12px;color:var(--red);margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.manual-override{background:var(--bg3);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:.75rem;}
+.manual-override p{font-size:12px;color:var(--t2);margin-bottom:.6rem;}
 .hr{display:flex;align-items:flex-start;gap:8px;padding:11px 0;border-bottom:1px solid var(--bdr);}
 .hr:last-child{border:none;}
 .hr-date{min-width:70px;flex-shrink:0;}
@@ -92,10 +99,10 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
 .mb8{margin-bottom:.75rem;}
 .ts{font-size:11px;color:var(--t3);margin-top:4px;}
-.alert-bar{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:var(--r);padding:.7rem 1rem;font-size:12px;color:var(--red);margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.manual-override{background:var(--bg3);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:.75rem;}
-.manual-override p{font-size:12px;color:var(--t2);margin-bottom:.6rem;}
-.manual-override .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+.setup-banner{background:var(--bg2);border:1px solid rgba(34,197,94,.3);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.5rem;}
+.setup-banner h3{font-size:15px;font-weight:600;color:var(--g);margin-bottom:.5rem;}
+.setup-banner p{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:.75rem;}
+.setup-banner code{background:var(--bg4);color:var(--g);padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:12px;}
 @media(max-width:580px){
   .g4{grid-template-columns:repeat(2,minmax(0,1fr));}
   .g3{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -104,18 +111,27 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   .sl-lbl{flex:0 0 100%;font-size:12px;}
   .sl-val{text-align:left;}
   .metric .num{font-size:17px;}
-  .nd-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .nd-grid{grid-template-columns:1fr 1fr;}
+  .setup-banner{padding:1rem;}
 }
 @media(max-width:380px){
-  .g4,.g3,.nd-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .g4,.g3{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 </style>
+</head>
+<body>
+<div class="page">
 
-<div id="lw" style="background:var(--bg0);min-height:100vh;display:flex;align-items:center;justify-content:center;">
-  <p id="lmsg" style="font-size:14px;color:var(--t2);">Carregando...</p>
-</div>
-
-<div class="wrap" id="app" style="display:none;">
+  <!-- SETUP BANNER — aparece só se PROXY_URL não estiver configurado -->
+  <div class="setup-banner" id="setup-banner" style="display:none;">
+    <h3>Configure o proxy da API</h3>
+    <p>Para buscar dados em tempo real, informe a URL do seu Cloudflare Worker proxy abaixo. Se ainda não criou, siga as instruções no <code>worker.js</code> deste repositório.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:.5rem;">
+      <div class="field" style="flex:1;min-width:250px;"><label>URL do Worker (ex: https://mxrf.seu-user.workers.dev)</label><input type="text" id="proxy-url-input" placeholder="https://mxrf.seu-user.workers.dev"/></div>
+      <button class="btn-g" onclick="saveProxyUrl()" style="height:42px;padding:0 18px;flex-shrink:0;">Salvar</button>
+    </div>
+    <p style="font-size:11px;color:var(--t3);">A URL fica salva no localStorage do seu browser.</p>
+  </div>
 
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1.5rem;">
     <div>
@@ -131,13 +147,13 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   </div>
 
   <div id="api-alert" style="display:none;" class="alert-bar">
-    <span id="api-alert-msg">API não retornou dados — usando valores manuais abaixo.</span>
+    <span id="api-alert-msg">API não retornou dados — use valores manuais.</span>
     <button class="btn-sm" onclick="toggleManual()">Editar</button>
   </div>
 
   <div id="manual-box" class="manual-override" style="display:none;">
-    <p>Informe os valores atuais manualmente (eles serão usados em todos os cálculos):</p>
-    <div class="row">
+    <p>Valores manuais (usados em todos os cálculos):</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <div class="field" style="min-width:130px;flex:1;"><label>Preço da cota (R$)</label><input type="number" id="m-preco" step="0.01" placeholder="9.81" oninput="applyManual()"/></div>
       <div class="field" style="min-width:130px;flex:1;"><label>DY mensal (%)</label><input type="number" id="m-dy" step="0.01" placeholder="1.05" oninput="applyManual()"/></div>
       <div class="field" style="min-width:130px;flex:1;"><label>CDI anual (%)</label><input type="number" id="m-cdi" step="0.01" placeholder="10.50" oninput="applyManual()"/></div>
@@ -153,14 +169,14 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   <p class="ts" id="src2" style="margin:.4rem 0 0;"></p>
 
   <div class="sec">Próximo dividendo</div>
-  <div id="nd-grid-wrap" class="nd-grid mb8">
+  <div class="nd-grid mb8">
     <div class="nd-item"><div class="lbl">Data de pagamento</div><div class="val" id="nd-date">—</div><div class="sub" id="nd-date-sub">registre abaixo</div></div>
     <div class="nd-item"><div class="lbl">Você vai receber (est.)</div><div class="val" id="nd-val">—</div><div class="sub" id="nd-val-sub">baseado nas suas cotas</div></div>
     <div class="nd-item"><div class="lbl">Cotas p/ R$100/mês</div><div class="val" id="nd-100">—</div><div class="sub">meta simples</div></div>
     <div class="nd-item"><div class="lbl">Suas cotas</div><div class="val" id="nd-has">—</div><div class="sub" id="nd-has-sub">—</div></div>
   </div>
   <div class="card" style="margin-bottom:.5rem;">
-    <p style="font-size:12px;color:var(--t2);margin-bottom:.65rem;">Registre a data real do próximo pagamento (varia todo mês — consulte o informe do fundo):</p>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:.65rem;">Registre a data real do próximo pagamento (consulte o informe do fundo — a data muda todo mês):</p>
     <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
       <div class="field" style="flex:1;min-width:160px;"><label>Data de pagamento</label><input type="date" id="nd-input" oninput="saveNextDiv()"/></div>
       <div class="field" style="flex:1;min-width:120px;"><label>Dividendo/cota (R$)</label><input type="number" id="nd-div-input" step="0.0001" placeholder="0.1033" oninput="saveNextDiv()"/></div>
@@ -246,30 +262,48 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
   <p style="font-size:11px;color:var(--t4);line-height:1.7;margin-top:1.5rem;">Simulação educativa. DY histórico não garante rentabilidade futura. FII envolve risco de mercado e liquidez. Consulte um assessor de investimentos antes de tomar decisões.</p>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+// ─── CONFIG ───────────────────────────────────────────────────
+// Após criar o Cloudflare Worker, salve a URL aqui ou use o banner de setup:
+const DEFAULT_PROXY = '';
+// ──────────────────────────────────────────────────────────────
+
 const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MS=MN.map(m=>m.slice(0,3));
 const NOW={y:2026,m:3,d:26};
 let entries=[],fiiP=null,dyM=null,cdiA=null;
 let nextDivData={date:'',div:0};
-let apiOk=false;
+let apiOk=false,manualVisible=false;
 let mainC=null,cmpC=null;
-let manualVisible=false;
 
 function brl(v,d=0){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:d,minimumFractionDigits:d});}
 function pct(v,d=2){return v.toFixed(d).replace('.',',')+' %';}
 function mk(y,m){return y*100+m;}
 function mAdd(y,m,n){let t=m-1+n;return{y:y+Math.floor(t/12),m:t%12+1};}
 
-async function loadStorage(){
+function getProxyUrl(){return localStorage.getItem('mxrf_proxy')||DEFAULT_PROXY;}
+function saveProxyUrl(){
+  const v=document.getElementById('proxy-url-input').value.trim();
+  if(!v)return;
+  localStorage.setItem('mxrf_proxy',v);
+  document.getElementById('setup-banner').style.display='none';
+  doRefresh();
+}
+
+function loadData(){
   try{
-    const r=await window.storage.get('mxrf11:v6');
-    if(r&&r.value){const d=JSON.parse(r.value);entries=d.entries||[];nextDivData=d.nextDiv||{date:'',div:0};}
+    const d=JSON.parse(localStorage.getItem('mxrf11_data')||'{}');
+    entries=d.entries||[];
+    nextDivData=d.nextDiv||{date:'',div:0};
+    const m=JSON.parse(localStorage.getItem('mxrf11_manual')||'{}');
+    if(m.p){fiiP=m.p;dyM=m.dy;cdiA=m.cdi;}
   }catch(e){entries=[];nextDivData={date:'',div:0};}
 }
-async function sv(){
-  try{await window.storage.set('mxrf11:v6',JSON.stringify({entries,nextDiv:nextDivData}));}catch(e){}
+function saveData(){
+  try{localStorage.setItem('mxrf11_data',JSON.stringify({entries,nextDiv:nextDivData}));}catch(e){}
+}
+function saveManual(){
+  if(fiiP)try{localStorage.setItem('mxrf11_manual',JSON.stringify({p:fiiP,dy:dyM,cdi:cdiA}));}catch(e){}
 }
 
 function toggleManual(){
@@ -281,15 +315,12 @@ function toggleManual(){
     if(cdiA)document.getElementById('m-cdi').value=cdiA.toFixed(2);
   }
 }
-
 function applyManual(){
   const p=parseFloat(document.getElementById('m-preco').value);
   const d=parseFloat(document.getElementById('m-dy').value);
   const c=parseFloat(document.getElementById('m-cdi').value);
-  if(p>0)fiiP=p;
-  if(d>0)dyM=d/100;
-  if(c>0)cdiA=c;
-  refreshDisplay();renderAll();
+  if(p>0)fiiP=p;if(d>0)dyM=d/100;if(c>0)cdiA=c;
+  saveManual();refreshDisplay();renderAll();
 }
 
 function refreshDisplay(){
@@ -310,23 +341,17 @@ function refreshDisplay(){
 function saveNextDiv(){
   nextDivData.date=document.getElementById('nd-input').value;
   nextDivData.div=parseFloat(document.getElementById('nd-div-input').value)||0;
-  sv();updateNextDiv();
+  saveData();updateNextDiv();
 }
-
 function updateNextDiv(){
   if(nextDivData.date){
     const d=new Date(nextDivData.date+'T12:00:00');
     document.getElementById('nd-date').textContent=d.toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});
     document.getElementById('nd-date-sub').textContent='data registrada';
-  }else{
-    document.getElementById('nd-date').textContent='—';
-    document.getElementById('nd-date-sub').textContent='registre a data abaixo';
-  }
-  const s=calcStats();
-  const cotas=s?s.tc:0;
+  }else{document.getElementById('nd-date').textContent='—';document.getElementById('nd-date-sub').textContent='registre abaixo';}
+  const s=calcStats();const cotas=s?s.tc:0;
   const divUnit=nextDivData.div>0?nextDivData.div:(fiiP&&dyM?fiiP*dyM:0);
-  const est=cotas*divUnit;
-  document.getElementById('nd-val').textContent=cotas>0?brl(est,2):'—';
+  document.getElementById('nd-val').textContent=cotas>0?brl(cotas*divUnit,2):'—';
   document.getElementById('nd-val-sub').textContent=cotas>0?cotas.toFixed(4)+' cotas × R$'+divUnit.toFixed(4):'Registre aportes';
   if(fiiP&&dyM){
     const cotasP100=Math.ceil(100/(fiiP*dyM));
@@ -353,7 +378,7 @@ function onFC(){
   document.getElementById('f-cotas').value=v>0&&p>0?(v/p).toFixed(4):'—';
 }
 
-async function addEntry(){
+function addEntry(){
   const mes=+document.getElementById('f-mes').value;
   const ano=+document.getElementById('f-ano').value;
   const val=parseFloat(document.getElementById('f-val').value);
@@ -366,13 +391,12 @@ async function addEntry(){
   err.style.display='none';
   entries.push({id:Date.now(),year:ano,month:mes,invested:val,pricePerCota:preco,cotas:val/preco,notes:obs});
   entries.sort((a,b)=>mk(a.year,a.month)-mk(b.year,b.month));
-  await sv();
-  document.getElementById('f-val').value='';
-  document.getElementById('f-obs').value='';
+  saveData();
+  document.getElementById('f-val').value='';document.getElementById('f-obs').value='';
   onFC();renderAll();
 }
 
-async function del(id){entries=entries.filter(e=>e.id!==id);await sv();renderAll();}
+function del(id){entries=entries.filter(e=>e.id!==id);saveData();renderAll();}
 
 function renderHist(){
   const el=document.getElementById('hist-list');
@@ -391,7 +415,7 @@ function renderHist(){
     </div>`;
   }).join('');
   const tot=entries.reduce((s,e)=>s+e.invested,0);
-  const ht=document.getElementById('hist-tot');ht.style.display='flex';
+  document.getElementById('hist-tot').style.display='flex';
   document.getElementById('hist-tot-val').textContent=brl(tot)+' · '+entries.length+' aportes';
 }
 
@@ -408,9 +432,8 @@ function calcStats(){
 
 function updateStats(meta){
   const s=calcStats();
-  const hasEntries=entries.length>0;
-  document.getElementById('empty-note').style.display=s?'none':(hasEntries?'none':'block');
-  document.getElementById('cw').style.display=(s||hasEntries)?'block':'none';
+  document.getElementById('empty-note').style.display=(!s&&!entries.length)?'block':'none';
+  document.getElementById('cw').style.display=(s||entries.length)?'block':'none';
   if(!s)return;
   document.getElementById('r-inv').textContent=brl(s.ti);
   document.getElementById('r-n').textContent=entries.length+' '+(entries.length===1?'aporte':'aportes');
@@ -432,8 +455,10 @@ function updateStats(meta){
   const apt=+document.getElementById('s-apt').value||0;
   const reinvPct=(+document.getElementById('s-reinv').value||100)/100;
   const tb=document.getElementById('tempo-box');
-  if(s.renda>=meta){tb.innerHTML=`<strong style="color:var(--g);">Meta já atingida!</strong> Renda atual de ${brl(s.renda,2)}/mês supera a meta de ${brl(meta)}/mês.`;tb.className='info-box green';tb.style.display='block';}
-  else if(apt>0||reinvPct>0){
+  if(s.renda>=meta){
+    tb.innerHTML=`<strong style="color:var(--g);">Meta já atingida!</strong> Renda atual de ${brl(s.renda,2)}/mês supera a meta de ${brl(meta)}/mês.`;
+    tb.className='info-box green';tb.style.display='block';
+  }else if(apt>0||reinvPct>0){
     let meses=0,c=s.tc;
     while(c*fiiP*dyM<meta&&meses<600){c+=(c*dyM*reinvPct)+(apt/fiiP);meses++;}
     const anos2=Math.floor(meses/12),m2=meses%12;
@@ -467,8 +492,7 @@ function buildMain(){
   const meta=+document.getElementById('s-meta').value||5000;
   const reinvP=(+document.getElementById('s-reinv').value||100)/100;
   const cdiNetM=Math.pow(1+cdiA*.85/100,1/12)-1;
-  const hL=[],hV=[],hC=[];
-  let cc=0,cCDI=0;
+  const hL=[],hV=[],hC=[];let cc=0,cCDI=0;
   if(entries.length){
     let cy=entries[0].year,cm=entries[0].month;
     while(mk(cy,cm)<=mk(NOW.y,NOW.m)){
@@ -505,37 +529,39 @@ function upd(){
   document.getElementById('s-reinv-o').textContent=reinv+' %';
   updateStats(meta);updateNextDiv();buildCmp();buildMain();
 }
-
 function renderAll(){renderHist();upd();}
 
 async function fetchFII(){
+  const proxy=getProxyUrl();
+  if(!proxy){
+    document.getElementById('setup-banner').style.display='block';
+    document.getElementById('api-alert').style.display='flex';
+    document.getElementById('api-alert-msg').textContent='Worker não configurado — use valores manuais ou configure o proxy acima.';
+    if(!fiiP){fiiP=9.81;dyM=0.0105;cdiA=10.5;}
+    refreshDisplay();return;
+  }
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,tools:[{type:'web_search_20250305',name:'web_search'}],system:'Responda APENAS JSON sem markdown: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',messages:[{role:'user',content:'Dados de hoje 26/03/2026: preço exato cota MXRF11 na B3 agora, DY mensal em % mais recente, último dividendo pago em R$ por cota, CDI anual % e Selic anual % Brasil.'}]})});
+    const res=await fetch(proxy,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,tools:[{type:'web_search_20250305',name:'web_search'}],system:'Responda APENAS JSON sem markdown: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',messages:[{role:'user',content:'Dados de hoje: preço exato cota MXRF11 na B3, DY mensal %, último dividendo R$/cota, CDI anual % e Selic anual % Brasil.'}]})});
+    if(!res.ok)throw new Error('http '+res.status);
     const d=await res.json();
-    const txt=d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
     const mm=txt.match(/\{[\s\S]*?\}/);
     if(!mm)throw new Error('no json');
     const p=JSON.parse(mm[0]);
     if(!p.mxrf11?.preco||p.mxrf11.preco<=0)throw new Error('bad price');
-    fiiP=p.mxrf11.preco;
-    dyM=p.mxrf11.dy_mensal_pct/100;
-    cdiA=p.taxas?.cdi_aa||10.5;
-    apiOk=true;
+    fiiP=p.mxrf11.preco;dyM=p.mxrf11.dy_mensal_pct/100;cdiA=p.taxas?.cdi_aa||10.5;
+    apiOk=true;saveManual();
     document.getElementById('api-alert').style.display='none';
-    document.getElementById('manual-box').style.display='none';
     document.getElementById('data-src').textContent='tempo real';
     document.getElementById('upd-ts').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('src2').textContent='';
     refreshDisplay();
   }catch(e){
     apiOk=false;
-    if(fiiP===null){
-      fiiP=9.81;dyM=0.0105;cdiA=10.5;
-    }
+    if(!fiiP){fiiP=9.81;dyM=0.0105;cdiA=10.5;}
     document.getElementById('api-alert').style.display='flex';
-    document.getElementById('api-alert-msg').textContent='Não foi possível buscar dados em tempo real. Verifique ou corrija os valores manualmente.';
+    document.getElementById('api-alert-msg').textContent='Não foi possível buscar dados. Verifique a URL do worker ou corrija manualmente.';
     document.getElementById('data-src').textContent='dados manuais';
-    document.getElementById('src2').textContent='Clique em "Editar" para corrigir os valores';
     refreshDisplay();
   }
 }
@@ -547,14 +573,15 @@ async function doRefresh(){
   b.disabled=false;b.textContent='Atualizar';
 }
 
-async function init(){
+function init(){
   const d=new Date(2026,2,26);
   document.getElementById('hdr-date').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  await loadStorage();
-  await fetchFII();
-  setupForm();renderAll();
-  document.getElementById('lw').style.display='none';
-  document.getElementById('app').style.display='block';
+  const proxy=getProxyUrl();
+  if(!proxy)document.getElementById('setup-banner').style.display='block';
+  loadData();setupForm();
+  fetchFII().then(()=>{renderAll();});
 }
 init();
 </script>
+</body>
+</html>
