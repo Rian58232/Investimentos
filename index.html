@@ -535,20 +535,61 @@ function renderAll(){renderHist();upd();}
 // A correção é adicionar o "async" antes:
 // A palavra 'async' ANTES de 'function' é o que resolve o seu erro
 // A palavra 'async' ANTES de 'function' é o que resolve o seu erro
+// O "async" aqui é obrigatório para o "await" funcionar lá embaixo
 async function fetchFII() {
-  const proxy = 'https://investimentos.rian1-meliodas.workers.dev'; 
+    const proxy = 'https://investimentos.rian1-meliodas.workers.dev';
 
-  try {
-    const resposta = await fetch(proxy, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307', 
-        max_tokens: 600,
-        system: 'Responda APENAS JSON: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',
-        messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
-      })
-    });
+    try {
+        console.log("Iniciando busca de dados...");
+
+        const resposta = await fetch(proxy, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-3-haiku-20240307',
+                max_tokens: 600,
+                system: 'Responda APENAS JSON: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',
+                messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
+            })
+        });
+
+        if (!resposta.ok) {
+            const txtErro = await resposta.text();
+            throw new Error('Erro no Worker: ' + resposta.status + ' - ' + txtErro);
+        }
+
+        const dadosBrutos = await resposta.json();
+        
+        // Acessando o texto dentro da estrutura da Anthropic
+        const textoAI = dadosBrutos.content[0].text;
+        const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
+        
+        if (!jsonMatch) throw new Error('JSON não encontrado na resposta');
+        
+        const p = JSON.parse(jsonMatch[0]);
+
+        // Atualizando as variáveis do seu gráfico/tabela
+        fiiP = p.mxrf11.preco;
+        dyM = p.mxrf11.dy_mensal_pct / 100;
+        cdiA = p.taxas?.cdi_aa || 10.5;
+        apiOk = true;
+
+        // Atualizando a interface
+        document.getElementById('api-alert').style.display = 'none';
+        document.getElementById('data-src').textContent = 'tempo real';
+        document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
+        
+        // Chama a sua função de desenhar o gráfico (verifique se o nome é esse mesmo)
+        if (typeof refreshDisplay === 'function') refreshDisplay();
+
+    } catch (erro) {
+        console.error('Falha na atualização:', erro);
+        apiOk = false;
+        document.getElementById('api-alert').style.display = 'flex';
+        // Se houver erro, tenta atualizar a tela com os dados que já existem
+        if (typeof refreshDisplay === 'function') refreshDisplay();
+    }
+} // <--- Certifique-se de que esta chave fecha a função corretamente
 
     if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
     
