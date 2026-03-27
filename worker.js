@@ -1,7 +1,7 @@
 // Cloudflare Worker — proxy para Anthropic API
-// Deploy em: https://workers.cloudflare.com
-// Adicione a variável de ambiente: API_KEY = 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
+// Certifique-se de que a API_KEY está nas "Settings > Variables" do painel!
 
+// CORREÇÃO: Adicionado aspas e removido a barra final para bater com a origem do navegador
 const ALLOWED_ORIGIN = "https://investimentos.rian1-meliodas.workers.dev";
 
 addEventListener('fetch', event => {
@@ -12,37 +12,43 @@ function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, x-api-key, anthropic-version, anthropic-beta',
     'Access-Control-Max-Age': '86400',
   };
 }
 
 async function handleRequest(request) {
-  // Preflight CORS
+  // 1. Trata o Preflight (CORS) - Essencial para evitar o erro 405/bloqueio
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders() });
   }
 
+  // 2. Bloqueia qualquer coisa que não seja POST (vinda do seu formulário/app)
   if (request.method !== 'POST') {
-    return new Response('Método não permitido', { status: 405 });
+    return new Response('Método não permitido. Use POST.', { 
+      status: 405, 
+      headers: corsHeaders() 
+    });
   }
 
   let body;
   try {
     body = await request.json();
   } catch {
-    return new Response('Body inválido', { status: 400 });
+    return new Response('Body inválido', { status: 400, headers: corsHeaders() });
   }
 
-  // API_KEY é variável de ambiente configurada no Cloudflare Dashboard
+  // Busca a chave configurada no dashboard da Cloudflare
   const apiKey = typeof API_KEY !== 'undefined' ? API_KEY : '';
+  
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API_KEY não configurada' }), {
+    return new Response(JSON.stringify({ error: 'API_KEY não configurada no Cloudflare' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', ...corsHeaders() },
     });
   }
 
+  // Faz a chamada real para a Anthropic
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
