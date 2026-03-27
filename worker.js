@@ -1,49 +1,66 @@
-export default {
-  async fetch(request, env) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, x-api-key, anthropic-version, anthropic-beta",
-    };
+// Cloudflare Worker — proxy para Anthropic API
+// Deploy em: https://workers.cloudflare.com
+// Adicione a variável de ambiente: API_KEY = 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
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
-    }
+const ALLOWED_ORIGIN = https://investimentos.rian1-meliodas.workers.dev
 
-    if (request.method !== "POST") {
-      return new Response("Envie um POST", { status: 405, headers: corsHeaders });
-    }
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
 
-    try {
-      const body = await request.json();
-      const apiKey = env.API_KEY || "";
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age': '86400',
+  };
+}
 
-      if (!apiKey) {
-        return new Response(JSON.stringify({ error: "API_KEY ausente no Cloudflare" }), {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        });
-      }
+async function handleRequest(request) {
+  // Preflight CORS
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders() });
+  }
 
-      const response = await fetch("https://api.anthropic.com", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-        },
-        body: JSON.stringify(body),
-      });
+  if (request.method !== 'POST') {
+    return new Response('Método não permitido', { status: 405 });
+  }
 
-      const data = await response.json();
-      return new Response(JSON.stringify(data), {
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
-    } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
-    }
-  },
-};
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response('Body inválido', { status: 400 });
+  }
+
+  // API_KEY é variável de ambiente configurada no Cloudflare Dashboard
+  const apiKey = typeof API_KEY !== 'undefined' ? API_KEY : '';
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'API_KEY não configurada' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders() },
+    });
+  }
+
+  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'tools-2024-05-16',
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = await upstream.json();
+
+  return new Response(JSON.stringify(data), {
+    status: upstream.status,
+    headers: {
+      'Content-Type': 'application/json',
+      ...corsHeaders(),
+    },
+  });
+}
