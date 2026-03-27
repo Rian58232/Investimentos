@@ -529,46 +529,57 @@ function upd(){
   document.getElementById('s-reinv-o').textContent=reinv+' %';
   updateStats(meta);updateNextDiv();buildCmp();buildMain();
 }
-// 1. Função de Renderização (Independente)
+// 1. Função de Renderização Limpa (Apenas UMA vez!)
 function renderAll() {
   if (typeof renderHist === 'function') renderHist();
   if (typeof upd === 'function') upd();
 }
 
-function renderAll() {
-  if (typeof renderHist === 'function') renderHist();
-  if (typeof upd === 'function') upd();
-}
-
-// Remova a duplicação do renderAll e deixe apenas uma vez:
-function renderAll() {
-  if (typeof renderHist === 'function') renderHist();
-  if (typeof upd === 'function') upd();
-}
-
+// 2. Busca os dados no seu Worker
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
   
   try {
-    // 1. Vai até a sua API na internet buscar os dados
     const resposta = await fetch(proxy);
-    
-    // 2. Se a API estiver fora do ar, ele força um erro para ir pro "catch"
     if (!resposta.ok) throw new Error('API fora do ar ou erro no Worker');
     
     const dados = await resposta.json();
     
-    // 3. Pega os dados que a API devolveu e salva nas suas variáveis
-    // (Ajuste 'preco', 'dy' e 'cdi' se o seu Worker usar nomes diferentes no JSON)
     if (dados.preco) fiiP = parseFloat(dados.preco);
     if (dados.dy) dyM = parseFloat(dados.dy);
     if (dados.cdi) cdiA = parseFloat(dados.cdi);
     
     apiOk = true;
     document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'dados reais da API';
+    document.getElementById('data-src').textContent = 'API Automática';
     refreshDisplay();
   
+  } catch(e) { 
+    console.error('Erro na API:', e);
+    apiOk = false;
+    if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 14.51; }
+    document.getElementById('api-alert').style.display = 'flex';
+    document.getElementById('data-src').textContent = 'dados manuais';
+    refreshDisplay();
+  }
+}
+
+// 3. Botão de Atualizar que estava dando erro
+async function doRefresh() {
+  const b = document.getElementById('btn-ref');
+  if (b) {
+    b.disabled = true; 
+    b.textContent = 'Buscando...';
+  }
+  
+  await fetchFII();
+  renderAll();
+  
+  if (b) {
+    b.disabled = false; 
+    b.textContent = 'Atualizar';
+  }
+}
   } catch(e) { 
     // SE DER QUALQUER ERRO NA INTERNET OU NA API, ELE CAI AQUI E SALVA SUA PELE
     console.error('Erro na API:', e);
