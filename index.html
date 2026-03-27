@@ -532,36 +532,51 @@ function upd(){
 function renderAll(){renderHist();upd();}
 
 async function fetchFII(){
-  const proxy=getProxyUrl();
-  if(!proxy){
-    document.getElementById('setup-banner').style.display='block';
-    document.getElementById('api-alert').style.display='flex';
-    document.getElementById('api-alert-msg').textContent='Worker não configurado — use valores manuais ou configure o proxy acima.';
-    if(!fiiP){fiiP=9.81;dyM=0.0105;cdiA=10.5;}
-    refreshDisplay();return;
-  }
-  try{
-    const res=await fetch(proxy,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,tools:[{type:'web_search_20250305',name:'web_search'}],system:'Responda APENAS JSON sem markdown: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',messages:[{role:'user',content:'Dados de hoje: preço exato cota MXRF11 na B3, DY mensal %, último dividendo R$/cota, CDI anual % e Selic anual % Brasil.'}]})});
-    if(!res.ok)throw new Error('http '+res.status);
-    const d=await res.json();
-    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const mm=txt.match(/\{[\s\S]*?\}/);
-    if(!mm)throw new Error('no json');
-    const p=JSON.parse(mm[0]);
-    if(!p.mxrf11?.preco||p.mxrf11.preco<=0)throw new Error('bad price');
-    fiiP=p.mxrf11.preco;dyM=p.mxrf11.dy_mensal_pct/100;cdiA=p.taxas?.cdi_aa||10.5;
-    apiOk=true;saveManual();
-    document.getElementById('api-alert').style.display='none';
-    document.getElementById('data-src').textContent='tempo real';
-    document.getElementById('upd-ts').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('src2').textContent='';
+  // 1. Verifique se esta URL é exatamente a do seu Worker
+  const proxy = 'https://investimentos.rian1-meliodas.workers.dev'; 
+
+  try {
+    const res = await fetch(proxy, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307', 
+        max_tokens: 600,
+        system: 'Responda APENAS JSON sem markdown: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',
+        messages: [{ role: 'user', content: 'Dados de hoje: preço MXRF11 na B3, DY mensal % e CDI anual Brasil.' }]
+      })
+    });
+
+    if(!res.ok) throw new Error('Erro no Worker: ' + res.status);
+    
+    const d = await res.json();
+    
+    // 2. O Claude retorna um array 'content'. Vamos pegar o texto dele:
+    const txt = d.content.find(b => b.type === 'text').text;
+    const mm = txt.match(/\{[\s\S]*?\}/);
+    if(!mm) throw new Error('JSON não encontrado na resposta');
+    
+    const p = JSON.parse(mm[0]);
+
+    // 3. Atualiza as variáveis globais do sistema
+    fiiP = p.mxrf11.preco;
+    dyM = p.mxrf11.dy_mensal_pct / 100;
+    cdiA = p.taxas?.cdi_aa || 10.5;
+    apiOk = true;
+
+    // 4. Atualiza a interface
+    document.getElementById('api-alert').style.display = 'none';
+    document.getElementById('data-src').textContent = 'tempo real';
+    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     refreshDisplay();
-  }catch(e){
-    apiOk=false;
-    if(!fiiP){fiiP=9.81;dyM=0.0105;cdiA=10.5;}
-    document.getElementById('api-alert').style.display='flex';
-    document.getElementById('api-alert-msg').textContent='Não foi possível buscar dados. Verifique a URL do worker ou corrija manualmente.';
-    document.getElementById('data-src').textContent='dados manuais';
+
+  } catch(e) {
+    console.error('Falha na atualização:', e);
+    apiOk = false;
+    // Valores padrão de segurança caso a API falhe
+    if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
+    document.getElementById('api-alert').style.display = 'flex';
+    document.getElementById('data-src').textContent = 'dados manuais';
     refreshDisplay();
   }
 }
