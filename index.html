@@ -572,13 +572,6 @@ async function fetchFII() {
     document.getElementById('api-alert').style.display = 'flex';
     refreshDisplay();
     
-    const d = await res.json();
-    // ... resto do seu código de carregar os dados
-
-    if(!res.ok) throw new Error('Erro no Worker: ' + res.status);
-    
-    const d = await res.json();
-    
     // 2. O Claude retorna um array 'content'. Vamos pegar o texto dele:
     const txt = d.content.find(b => b.type === 'text').text;
     const mm = txt.match(/\{[\s\S]*?\}/);
