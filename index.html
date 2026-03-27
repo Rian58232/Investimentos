@@ -542,59 +542,20 @@ function renderAll() {
 
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
+ refreshDisplay();
   
-  try {
-    const resposta = await fetch(proxy, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 600,
-        system: 'Responda APENAS JSON: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',
-        messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
-      })
-    });
-
-    if (!resposta.ok) throw new Error('Erro:' + resposta.status);
-
-    const dadosBrutos = await resposta.json();
-    const textoAI = dadosBrutos.content[0].text;
-    const mm = textoAI.match(/\{[\s\S]*?\}/);
-    
-    if (!mm) throw new Error('JSON não encontrado');
-    
-    const p = JSON.parse(mm[0]);
-
-    // Atualiza os dados
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-
-    // Atualiza a tela
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    
-    refreshDisplay();
   } catch(e) {
     console.error('Erro na API:', e);
     apiOk = false;
-    document.getElementById('api-alert').style.display = 'flex';
-    refreshDisplay();
-  }
-}
-
-  catch(e) {
-    console.error('Erro na API:', e);
-    apiOk = false;
-    // Valores padrão caso a API falhe
     if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
     document.getElementById('api-alert').style.display = 'flex';
     document.getElementById('data-src').textContent = 'dados manuais';
     refreshDisplay();
+  }
+} // <--- ESSA CHAVE FECHA A FETCHFII
+
+async function doRefresh(){ // <--- AQUI COMEÇA A PRÓXIMA
   
-async function doRefresh(){
   const b=document.getElementById('btn-ref');
   b.disabled=true;b.textContent='Buscando...';
   await fetchFII();renderAll();
