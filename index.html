@@ -542,9 +542,7 @@ function renderAll() {
 
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
-
   try {
-    console.log("Iniciando busca...");
     const resposta = await fetch(proxy, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -555,121 +553,26 @@ async function fetchFII() {
         messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
       })
     });
-
-    if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-
+    if (!resposta.ok) throw new Error('Erro:' + resposta.status);
     const dadosBrutos = await resposta.json();
     const textoAI = dadosBrutos.content[0].text;
     const mm = textoAI.match(/\{[\s\S]*?\}/);
-    
     if (!mm) throw new Error('JSON não encontrado');
-    
     const p = JSON.parse(mm[0]);
-
-    // Atualiza as variáveis globais
     fiiP = p.mxrf11.preco;
     dyM = p.mxrf11.dy_mensal_pct / 100;
     cdiA = p.taxas?.cdi_aa || 10.5;
     apiOk = true;
-
-    // Atualiza a interface
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    
-    refreshDisplay();
-
-  } catch(e) {
-    console.error('Falha na atualização:', e);
-    apiOk = false;
-    if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
-    document.getElementById('api-alert').style.display = 'flex';
-    document.getElementById('data-src').textContent = 'dados manuais';
-    refreshDisplay();
-  }
-}
-        refreshDisplay();
-
-    } catch (erro) {
-        console.error('Falha na atualização:', erro);
-        apiOk = false;
-        // Valores padrão caso a API falhe
-        if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
-        document.getElementById('api-alert').style.display = 'flex';
-        document.getElementById('data-src').textContent = 'dados manuais';
-        refreshDisplay();
-    }
-}
-    refreshDisplay();
-  catch(e) {
-    console.error('Falha na atualização:', e);
-    apiOk = false;
-    document.getElementById('api-alert').style.display = 'flex';
-    refreshDisplay();
-  }
-}
-
-    if(!resposta.ok) throw new Error('Erro: ' + resposta.status);
-    
-    const dados = await resposta.json();
-    const textoAI = dados.content[0].text;
-    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-    const p = JSON.parse(jsonMatch[0]);
-
-    // Atualiza os valores globais
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-
     document.getElementById('api-alert').style.display = 'none';
     document.getElementById('data-src').textContent = 'tempo real';
     refreshDisplay();
-
   } catch(e) {
-    console.error('Erro na função:', e);
+    console.error('Erro na API:', e);
     apiOk = false;
     document.getElementById('api-alert').style.display = 'flex';
     refreshDisplay();
   }
 }
-    if(!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-    
-    const dadosBrutos = await resposta.json();
-    
-    // Pega o texto de dentro do objeto da Anthropic
-    const textoAI = dadosBrutos.content[0].text;
-    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-    if(!jsonMatch) throw new Error('JSON não encontrado');
-    
-    const p = JSON.parse(jsonMatch[0]);
-
-    // Atualiza as variáveis globais
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-
-    // Atualiza a tela
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-    refreshDisplay();
-
-  } catch(e) {
-    console.error('Falha na atualização:', e);
-    apiOk = false;
-    document.getElementById('api-alert').style.display = 'flex';
-    refreshDisplay();
-  }
-}
-
-    // Se ainda der erro, vamos ver o que o Worker está dizendo de verdade
-    if(!res.ok) {
-      const errorText = await res.text();
-      console.error("Resposta do Worker:", errorText);
-      throw new Error('Erro ' + res.status);
-    }
     
     const d = await res.json();
     // ... resto do seu código de carregar os dados
