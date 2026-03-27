@@ -1,0 +1,560 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+--bg0:#0b0d10;--bg1:#111418;--bg2:#181c22;--bg3:#1f242d;--bg4:#272d38;--bg5:#2f3645;
+--bdr:#252b36;--bdr2:#343d4e;
+--g:#22c55e;--g2:#16a34a;
+--g-bg:rgba(34,197,94,.08);--g-bg2:rgba(34,197,94,.14);
+--red:#f87171;--red-bg:rgba(248,113,113,.1);
+--blue:#60a5fa;--blue-bg:rgba(96,165,250,.1);
+--amber:#fbbf24;--amber-bg:rgba(251,191,36,.1);
+--pink:#f472b6;
+--t1:#eef0f4;--t2:#8b95a6;--t3:#4e5769;--t4:#333b4a;
+--mono:'SF Mono','Fira Code','Roboto Mono',monospace;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+--r:10px;--rl:14px;
+}
+html,body{background:var(--bg0);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.5;}
+.wrap{background:var(--bg0);min-height:100vh;padding:.5rem 0 5rem;}
+.sec{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin:2rem 0 .85rem;display:flex;align-items:center;gap:10px;}
+.sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
+button{font-family:var(--sans);cursor:pointer;border-radius:8px;transition:all .15s;font-size:13px;font-weight:500;}
+.btn-g{background:var(--g);color:#000;border:none;padding:9px 20px;font-weight:700;}
+.btn-g:hover{background:#16c057;}.btn-g:active{transform:scale(.97);}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--bdr2);padding:7px 14px;}
+.btn-ghost:hover{background:var(--bg3);color:var(--t1);}.btn-ghost:active{transform:scale(.97);}
+.btn-del{background:none;border:none;color:var(--t4);padding:5px 8px;font-size:16px;line-height:1;}
+.btn-del:hover{color:var(--red);background:var(--red-bg);}
+.btn-sm{background:transparent;color:var(--t3);border:1px solid var(--bdr);padding:4px 10px;font-size:11px;border-radius:6px;}
+.btn-sm:hover{color:var(--t1);border-color:var(--bdr2);}
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:1rem 1.1rem;}
+.metric{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:.85rem 1rem;}
+.metric.hi{border-color:rgba(34,197,94,.3);position:relative;overflow:hidden;}
+.metric.hi::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--g);}
+.metric .lbl{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:5px;}
+.metric .num{font-size:20px;font-weight:700;font-family:var(--mono);color:var(--t1);letter-spacing:-.3px;}
+.metric .sub{font-size:11px;color:var(--t3);margin-top:4px;}
+.prog-wrap{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:.9rem 1rem;}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.prog-tit{font-size:13px;font-weight:500;color:var(--t1);}
+.prog-pct{font-size:13px;font-weight:700;font-family:var(--mono);}
+.prog-track{height:5px;border-radius:3px;background:var(--bg5);overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.prog-info{font-size:12px;color:var(--t2);margin-top:7px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);}
+.field input,.field select{background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;color:var(--t1);font-family:var(--sans);font-size:14px;padding:9px 11px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;}
+.field input:focus,.field select:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(34,197,94,.12);}
+.field input::placeholder{color:var(--t4);}
+.field input[readonly]{background:var(--bg4);color:var(--t3);cursor:default;}
+.field select option{background:var(--bg3);}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:700;}
+.chip-g{background:var(--g-bg2);color:var(--g);}
+.chip-r{background:var(--red-bg);color:var(--red);}
+.chip-am{background:var(--amber-bg);color:var(--amber);}
+.sl-row{display:flex;align-items:center;gap:12px;margin-bottom:.7rem;}
+.sl-lbl{font-size:13px;color:var(--t2);flex:1;min-width:0;}
+.sl-val{font-size:13px;font-weight:700;font-family:var(--mono);color:var(--t1);width:100px;text-align:right;flex-shrink:0;}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:var(--bg5);outline:none;cursor:pointer;min-width:0;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--g);cursor:pointer;box-shadow:0 0 0 3px rgba(34,197,94,.2);}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--g);cursor:pointer;border:none;}
+.leg{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;}
+.leg span{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0;}
+.info-box{border-radius:var(--r);padding:.85rem 1rem;font-size:12px;color:var(--t2);line-height:1.6;}
+.info-box.green{background:var(--g-bg);border:1px solid rgba(34,197,94,.15);}
+.info-box.amber{background:var(--amber-bg);border:1px solid rgba(251,191,36,.15);}
+.info-box.red{background:var(--red-bg);border:1px solid rgba(248,113,113,.2);}
+.hr{display:flex;align-items:flex-start;gap:8px;padding:11px 0;border-bottom:1px solid var(--bdr);}
+.hr:last-child{border:none;}
+.hr-date{min-width:70px;flex-shrink:0;}
+.hr-mon{font-size:13px;font-weight:600;color:var(--t1);}
+.hr-yr{font-size:11px;color:var(--t3);margin-top:1px;}
+.hr-body{flex:1;min-width:0;}
+.hr-val{font-size:13px;color:var(--t1);}
+.hr-note{font-size:11px;color:var(--t3);margin-top:2px;font-style:italic;}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
+.cmp-card{border-radius:var(--rl);padding:1rem;border:1px solid var(--bdr);}
+.cmp-card.rv{background:var(--g-bg);border-color:rgba(34,197,94,.18);}
+.cmp-card.fx{background:var(--bg2);}
+.cmp-tit{font-size:12px;font-weight:700;margin-bottom:.85rem;}
+.cmp-card.rv .cmp-tit{color:var(--g);}.cmp-card.fx .cmp-tit{color:var(--t1);}
+.mile{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.mile:last-child{border:none;margin-top:3px;}
+.mile .yr{font-size:12px;color:var(--t2);}.mile .vl{font-size:13px;font-family:var(--mono);font-weight:700;}
+.nd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.nd-item{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r);padding:.85rem 1rem;}
+.nd-item .lbl{font-size:11px;color:var(--t3);font-weight:500;margin-bottom:5px;}
+.nd-item .val{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--t1);}
+.nd-item .sub{font-size:11px;color:var(--t2);margin-top:3px;}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.mb8{margin-bottom:.75rem;}
+.ts{font-size:11px;color:var(--t3);margin-top:4px;}
+.alert-bar{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:var(--r);padding:.7rem 1rem;font-size:12px;color:var(--red);margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.manual-override{background:var(--bg3);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:.75rem;}
+.manual-override p{font-size:12px;color:var(--t2);margin-bottom:.6rem;}
+.manual-override .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+@media(max-width:580px){
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .cmp-grid{grid-template-columns:1fr;}
+  .sl-row{flex-wrap:wrap;gap:6px;}
+  .sl-lbl{flex:0 0 100%;font-size:12px;}
+  .sl-val{text-align:left;}
+  .metric .num{font-size:17px;}
+  .nd-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:380px){
+  .g4,.g3,.nd-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+</style>
+
+<div id="lw" style="background:var(--bg0);min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <p id="lmsg" style="font-size:14px;color:var(--t2);">Carregando...</p>
+</div>
+
+<div class="wrap" id="app" style="display:none;">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1.5rem;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;">Diário de investimentos</div>
+      <div style="font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--t1);" id="hdr-date">—</div>
+      <div style="font-size:13px;color:var(--t2);margin-top:3px;">MXRF11 — carteira real + projeção</div>
+    </div>
+    <div style="text-align:right;flex-shrink:0;padding-top:4px;">
+      <button class="btn-ghost" id="btn-ref" onclick="doRefresh()">Atualizar</button>
+      <p class="ts" id="upd-ts"></p>
+      <p class="ts" id="data-src"></p>
+    </div>
+  </div>
+
+  <div id="api-alert" style="display:none;" class="alert-bar">
+    <span id="api-alert-msg">API não retornou dados — usando valores manuais abaixo.</span>
+    <button class="btn-sm" onclick="toggleManual()">Editar</button>
+  </div>
+
+  <div id="manual-box" class="manual-override" style="display:none;">
+    <p>Informe os valores atuais manualmente (eles serão usados em todos os cálculos):</p>
+    <div class="row">
+      <div class="field" style="min-width:130px;flex:1;"><label>Preço da cota (R$)</label><input type="number" id="m-preco" step="0.01" placeholder="9.81" oninput="applyManual()"/></div>
+      <div class="field" style="min-width:130px;flex:1;"><label>DY mensal (%)</label><input type="number" id="m-dy" step="0.01" placeholder="1.05" oninput="applyManual()"/></div>
+      <div class="field" style="min-width:130px;flex:1;"><label>CDI anual (%)</label><input type="number" id="m-cdi" step="0.01" placeholder="10.50" oninput="applyManual()"/></div>
+    </div>
+  </div>
+
+  <div class="g4 mb8">
+    <div class="metric hi"><div class="lbl">Preço da cota</div><div class="num" id="s-price">—</div><div class="sub" id="s-price-src">—</div></div>
+    <div class="metric"><div class="lbl">DY mensal</div><div class="num" id="s-dy">—</div><div class="sub" id="s-divv">—</div></div>
+    <div class="metric"><div class="lbl">DY anual</div><div class="num" id="s-dya">—</div><div class="sub">composto</div></div>
+    <div class="metric"><div class="lbl">CDI / Selic</div><div class="num" id="s-cdi">—</div><div class="sub">taxa anual</div></div>
+  </div>
+  <p class="ts" id="src2" style="margin:.4rem 0 0;"></p>
+
+  <div class="sec">Próximo dividendo</div>
+  <div id="nd-grid-wrap" class="nd-grid mb8">
+    <div class="nd-item"><div class="lbl">Data de pagamento</div><div class="val" id="nd-date">—</div><div class="sub" id="nd-date-sub">registre abaixo</div></div>
+    <div class="nd-item"><div class="lbl">Você vai receber (est.)</div><div class="val" id="nd-val">—</div><div class="sub" id="nd-val-sub">baseado nas suas cotas</div></div>
+    <div class="nd-item"><div class="lbl">Cotas p/ R$100/mês</div><div class="val" id="nd-100">—</div><div class="sub">meta simples</div></div>
+    <div class="nd-item"><div class="lbl">Suas cotas</div><div class="val" id="nd-has">—</div><div class="sub" id="nd-has-sub">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:.5rem;">
+    <p style="font-size:12px;color:var(--t2);margin-bottom:.65rem;">Registre a data real do próximo pagamento (varia todo mês — consulte o informe do fundo):</p>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+      <div class="field" style="flex:1;min-width:160px;"><label>Data de pagamento</label><input type="date" id="nd-input" oninput="saveNextDiv()"/></div>
+      <div class="field" style="flex:1;min-width:120px;"><label>Dividendo/cota (R$)</label><input type="number" id="nd-div-input" step="0.0001" placeholder="0.1033" oninput="saveNextDiv()"/></div>
+    </div>
+  </div>
+
+  <div class="sec">Minha carteira real</div>
+  <div id="empty-note" style="background:var(--bg2);border:1px dashed var(--bdr2);border-radius:var(--r);padding:1.5rem;text-align:center;font-size:13px;color:var(--t3);">Nenhum aporte registrado. Adicione seu primeiro aporte abaixo.</div>
+
+  <div id="cw" style="display:none;">
+    <div class="g3 mb8">
+      <div class="metric"><div class="lbl">Total investido</div><div class="num" id="r-inv">—</div><div class="sub" id="r-n">—</div></div>
+      <div class="metric"><div class="lbl">Cotas acumuladas</div><div class="num" id="r-cotas">—</div><div class="sub" id="r-pm">—</div></div>
+      <div class="metric"><div class="lbl">Valor de mercado</div><div class="num" id="r-val">—</div><div class="sub" id="r-gl">—</div></div>
+      <div class="metric"><div class="lbl">Renda mensal est.</div><div class="num" id="r-renda">—</div><div class="sub">dividendos</div></div>
+      <div class="metric"><div class="lbl">Yield on cost</div><div class="num" id="r-yoc">—</div><div class="sub">rendimento s/ custo</div></div>
+      <div class="metric"><div class="lbl">Desde</div><div class="num" id="r-ini">—</div><div class="sub" id="r-tempo">—</div></div>
+    </div>
+    <div class="prog-wrap mb8">
+      <div class="prog-row"><span class="prog-tit">Progresso até a meta</span><span class="prog-pct" id="cur-mpct" style="color:var(--g);">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="cur-mfill" style="width:0%;background:var(--g);"></div></div>
+      <p class="prog-info" id="cur-mtxt">—</p>
+    </div>
+    <div id="tempo-box" class="info-box amber" style="display:none;margin-bottom:.5rem;"></div>
+  </div>
+
+  <div class="sec">Registrar aporte</div>
+  <div class="card">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.85rem;">
+      <div class="field" style="min-width:130px;flex:1;"><label>Mês</label><select id="f-mes" onchange="onFC()"></select></div>
+      <div class="field" style="min-width:90px;flex:1;"><label>Ano</label><select id="f-ano" onchange="onFC()"></select></div>
+      <div class="field" style="min-width:130px;flex:1.5;"><label>Valor investido (R$)</label><input type="number" id="f-val" min="1" step="1" placeholder="500" oninput="onFC()"/></div>
+      <div class="field" style="min-width:120px;flex:1.5;"><label>Preço pago por cota</label><input type="number" id="f-preco" step="0.01" placeholder="9.81" oninput="onFC()"/></div>
+      <div class="field" style="min-width:110px;flex:1;"><label>Cotas compradas</label><input id="f-cotas" readonly placeholder="—"/></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+      <div class="field" style="flex:1;min-width:200px;"><label>Observação (opcional)</label><input type="text" id="f-obs" placeholder="ex: primeiro aporte, 13º salário, oportunidade..."/></div>
+      <button class="btn-g" onclick="addEntry()" style="height:42px;padding:0 22px;flex-shrink:0;">+ Registrar</button>
+    </div>
+    <p id="f-err" style="font-size:12px;color:var(--red);margin-top:7px;display:none;"></p>
+  </div>
+
+  <div class="sec">Histórico de aportes</div>
+  <div class="card">
+    <div id="hist-list"></div>
+    <div id="hist-tot" style="display:none;padding-top:10px;margin-top:4px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;">
+      <span style="font-size:12px;color:var(--t2);">Total acumulado</span>
+      <span style="font-size:13px;font-weight:700;font-family:var(--mono);color:var(--t1);" id="hist-tot-val">—</span>
+    </div>
+  </div>
+
+  <div class="sec">Comparativo de renda mensal</div>
+  <p style="font-size:13px;color:var(--t2);margin-bottom:1rem;line-height:1.65;">Reinvestir <strong style="color:var(--g);">todos os dividendos</strong> vs. só fazer aporte fixo sem reinvestir:</p>
+  <div class="cmp-grid" id="cmp-grid"></div>
+  <div class="leg"><span><span class="dot" style="background:var(--g);"></span>Reinvestindo tudo</span><span><span class="dot" style="background:var(--blue);"></span>Só aporte fixo</span></div>
+  <div style="position:relative;width:100%;height:210px;margin-bottom:1.75rem;"><canvas id="cmp-chart"></canvas></div>
+
+  <div class="sec">Projeção futura</div>
+  <div class="sl-row"><span class="sl-lbl">Aporte mensal futuro</span><input type="range" id="s-apt" min="0" max="5000" step="50" value="300" oninput="upd()"/><span class="sl-val" id="s-apt-o">R$ 300</span></div>
+  <div class="sl-row"><span class="sl-lbl">% dividendos reinvestidos</span><input type="range" id="s-reinv" min="0" max="100" step="5" value="100" oninput="upd()"/><span class="sl-val" id="s-reinv-o">100%</span></div>
+  <div class="sl-row"><span class="sl-lbl">Horizonte</span><input type="range" id="s-anos" min="1" max="30" step="1" value="20" oninput="upd()"/><span class="sl-val" id="s-anos-o">20 anos</span></div>
+  <div class="sl-row"><span class="sl-lbl">Meta de renda mensal</span><input type="range" id="s-meta" min="500" max="30000" step="500" value="5000" oninput="upd()"/><span class="sl-val" id="s-meta-o">R$ 5.000</span></div>
+
+  <div class="sec">Em <span id="proj-lbl">20</span> anos — <span id="proj-ano">2046</span></div>
+  <div class="g3 mb8">
+    <div class="metric"><div class="lbl">Patrimônio projetado</div><div class="num" id="p-pat">—</div><div class="sub" id="p-pat-r">—</div></div>
+    <div class="metric"><div class="lbl">Cotas totais</div><div class="num" id="p-cotas">—</div><div class="sub">com reinvestimento</div></div>
+    <div class="metric"><div class="lbl">Renda mensal</div><div class="num" id="p-renda">—</div><div class="sub" id="p-renda-r">—</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row"><span class="prog-tit">Meta de renda futura</span><span class="prog-pct" id="proj-mpct">—</span></div>
+    <div class="prog-track"><div class="prog-fill" id="proj-mfill" style="width:0%;"></div></div>
+    <p class="prog-info" id="proj-mtxt">—</p>
+  </div>
+
+  <div class="leg" style="margin-top:1.25rem;">
+    <span><span class="dot" style="background:var(--g);"></span>Real</span>
+    <span><span class="dot" style="background:transparent;border:2px dashed var(--g);"></span>Projeção</span>
+    <span><span class="dot" style="background:var(--blue);"></span>CDI líq.</span>
+    <span><span class="dot" style="background:var(--pink);"></span>Meta</span>
+  </div>
+  <div style="position:relative;width:100%;height:280px;margin-bottom:1rem;"><canvas id="main-chart"></canvas></div>
+  <p style="font-size:11px;color:var(--t4);line-height:1.7;margin-top:1.5rem;">Simulação educativa. DY histórico não garante rentabilidade futura. FII envolve risco de mercado e liquidez. Consulte um assessor de investimentos antes de tomar decisões.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MS=MN.map(m=>m.slice(0,3));
+const NOW={y:2026,m:3,d:26};
+let entries=[],fiiP=null,dyM=null,cdiA=null;
+let nextDivData={date:'',div:0};
+let apiOk=false;
+let mainC=null,cmpC=null;
+let manualVisible=false;
+
+function brl(v,d=0){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:d,minimumFractionDigits:d});}
+function pct(v,d=2){return v.toFixed(d).replace('.',',')+' %';}
+function mk(y,m){return y*100+m;}
+function mAdd(y,m,n){let t=m-1+n;return{y:y+Math.floor(t/12),m:t%12+1};}
+
+async function loadStorage(){
+  try{
+    const r=await window.storage.get('mxrf11:v6');
+    if(r&&r.value){const d=JSON.parse(r.value);entries=d.entries||[];nextDivData=d.nextDiv||{date:'',div:0};}
+  }catch(e){entries=[];nextDivData={date:'',div:0};}
+}
+async function sv(){
+  try{await window.storage.set('mxrf11:v6',JSON.stringify({entries,nextDiv:nextDivData}));}catch(e){}
+}
+
+function toggleManual(){
+  manualVisible=!manualVisible;
+  document.getElementById('manual-box').style.display=manualVisible?'block':'none';
+  if(manualVisible){
+    if(fiiP)document.getElementById('m-preco').value=fiiP.toFixed(2);
+    if(dyM)document.getElementById('m-dy').value=(dyM*100).toFixed(4);
+    if(cdiA)document.getElementById('m-cdi').value=cdiA.toFixed(2);
+  }
+}
+
+function applyManual(){
+  const p=parseFloat(document.getElementById('m-preco').value);
+  const d=parseFloat(document.getElementById('m-dy').value);
+  const c=parseFloat(document.getElementById('m-cdi').value);
+  if(p>0)fiiP=p;
+  if(d>0)dyM=d/100;
+  if(c>0)cdiA=c;
+  refreshDisplay();renderAll();
+}
+
+function refreshDisplay(){
+  if(fiiP!=null){
+    document.getElementById('s-price').textContent='R$'+fiiP.toFixed(2).replace('.',',');
+    document.getElementById('s-price-src').textContent=apiOk?'MXRF11 hoje':'valor manual';
+  }
+  if(dyM!=null){
+    document.getElementById('s-dy').textContent=pct(dyM*100)+'/mês';
+    document.getElementById('s-divv').textContent='R$'+(fiiP*dyM).toFixed(4).replace('.',',')+'/cota (est.)';
+    document.getElementById('s-dya').textContent=pct((Math.pow(1+dyM,12)-1)*100);
+  }
+  if(cdiA!=null)document.getElementById('s-cdi').textContent=pct(cdiA);
+  if(fiiP)document.getElementById('f-preco').value=fiiP.toFixed(2);
+  onFC();
+}
+
+function saveNextDiv(){
+  nextDivData.date=document.getElementById('nd-input').value;
+  nextDivData.div=parseFloat(document.getElementById('nd-div-input').value)||0;
+  sv();updateNextDiv();
+}
+
+function updateNextDiv(){
+  if(nextDivData.date){
+    const d=new Date(nextDivData.date+'T12:00:00');
+    document.getElementById('nd-date').textContent=d.toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('nd-date-sub').textContent='data registrada';
+  }else{
+    document.getElementById('nd-date').textContent='—';
+    document.getElementById('nd-date-sub').textContent='registre a data abaixo';
+  }
+  const s=calcStats();
+  const cotas=s?s.tc:0;
+  const divUnit=nextDivData.div>0?nextDivData.div:(fiiP&&dyM?fiiP*dyM:0);
+  const est=cotas*divUnit;
+  document.getElementById('nd-val').textContent=cotas>0?brl(est,2):'—';
+  document.getElementById('nd-val-sub').textContent=cotas>0?cotas.toFixed(4)+' cotas × R$'+divUnit.toFixed(4):'Registre aportes';
+  if(fiiP&&dyM){
+    const cotasP100=Math.ceil(100/(fiiP*dyM));
+    document.getElementById('nd-100').textContent=cotasP100.toLocaleString('pt-BR');
+    document.getElementById('nd-has').textContent=cotas>0?cotas.toFixed(2):'0';
+    const pp=cotas>0?Math.min(100,cotas/cotasP100*100):0;
+    document.getElementById('nd-has-sub').textContent=cotas>0?pp.toFixed(1).replace('.',',')+' % do caminho p/ R$100/mês':'Nenhuma cota ainda';
+  }
+}
+
+function setupForm(){
+  const ms=document.getElementById('f-mes');
+  MN.forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;if(i+1===NOW.m)o.selected=true;ms.appendChild(o);});
+  const ya=document.getElementById('f-ano');
+  for(let y=2018;y<=NOW.y;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===NOW.y)o.selected=true;ya.appendChild(o);}
+  if(nextDivData.date)document.getElementById('nd-input').value=nextDivData.date;
+  if(nextDivData.div)document.getElementById('nd-div-input').value=nextDivData.div;
+  onFC();
+}
+
+function onFC(){
+  const v=parseFloat(document.getElementById('f-val').value)||0;
+  const p=parseFloat(document.getElementById('f-preco').value)||0;
+  document.getElementById('f-cotas').value=v>0&&p>0?(v/p).toFixed(4):'—';
+}
+
+async function addEntry(){
+  const mes=+document.getElementById('f-mes').value;
+  const ano=+document.getElementById('f-ano').value;
+  const val=parseFloat(document.getElementById('f-val').value);
+  const preco=parseFloat(document.getElementById('f-preco').value);
+  const obs=document.getElementById('f-obs').value.trim();
+  const err=document.getElementById('f-err');
+  if(!val||val<=0){err.textContent='Informe o valor investido.';err.style.display='block';return;}
+  if(!preco||preco<=0){err.textContent='Informe o preço pago por cota.';err.style.display='block';return;}
+  if(mk(ano,mes)>mk(NOW.y,NOW.m)){err.textContent='Não é possível registrar aportes futuros.';err.style.display='block';return;}
+  err.style.display='none';
+  entries.push({id:Date.now(),year:ano,month:mes,invested:val,pricePerCota:preco,cotas:val/preco,notes:obs});
+  entries.sort((a,b)=>mk(a.year,a.month)-mk(b.year,b.month));
+  await sv();
+  document.getElementById('f-val').value='';
+  document.getElementById('f-obs').value='';
+  onFC();renderAll();
+}
+
+async function del(id){entries=entries.filter(e=>e.id!==id);await sv();renderAll();}
+
+function renderHist(){
+  const el=document.getElementById('hist-list');
+  if(!entries.length){el.innerHTML='<p style="text-align:center;padding:1.25rem 0;font-size:13px;color:var(--t3);">Nenhum aporte ainda.</p>';document.getElementById('hist-tot').style.display='none';return;}
+  const p=fiiP||0;
+  el.innerHTML=[...entries].reverse().map(e=>{
+    const isF=e.id===entries[0].id;
+    const gl=p>0?((p-e.pricePerCota)/e.pricePerCota*100):0;
+    const gc=gl>=0?'var(--g)':'var(--red)';
+    const gt=(gl>=0?'+':'')+gl.toFixed(1).replace('.',',')+' %';
+    return`<div class="hr">
+      <div class="hr-date"><div class="hr-mon">${MS[e.month-1]} ${e.year}</div><div class="hr-yr">${isF?'<span class="chip chip-g" style="font-size:10px;">início</span>':e.cotas.toFixed(3)+' cot.'}</div></div>
+      <div class="hr-body"><div class="hr-val">${brl(e.invested)} <span style="color:var(--t2);font-size:12px;">@ R$${e.pricePerCota.toFixed(2).replace('.',',')}</span></div>${e.notes?`<div class="hr-note">${e.notes}</div>`:''}</div>
+      <div style="text-align:right;flex-shrink:0;">${p>0?`<span class="chip" style="color:${gc};background:${gl>=0?'rgba(34,197,94,.1)':'rgba(248,113,113,.1)'};">${gt}</span>`:''}</div>
+      <button class="btn-del" onclick="del(${e.id})">×</button>
+    </div>`;
+  }).join('');
+  const tot=entries.reduce((s,e)=>s+e.invested,0);
+  const ht=document.getElementById('hist-tot');ht.style.display='flex';
+  document.getElementById('hist-tot-val').textContent=brl(tot)+' · '+entries.length+' aportes';
+}
+
+function calcStats(){
+  if(!entries.length||!fiiP||!dyM)return null;
+  const ti=entries.reduce((s,e)=>s+e.invested,0);
+  const tc=entries.reduce((s,e)=>s+e.cotas,0);
+  const avg=ti/tc;const cv=tc*fiiP;const gain=cv-ti;
+  const gainP=gain/ti*100;const renda=tc*fiiP*dyM;
+  const yoc=renda*12/ti*100;const first=entries[0];
+  const mo=(NOW.y-first.year)*12+(NOW.m-first.month);
+  return{ti,tc,avg,cv,gain,gainP,renda,yoc,first,mo};
+}
+
+function updateStats(meta){
+  const s=calcStats();
+  const hasEntries=entries.length>0;
+  document.getElementById('empty-note').style.display=s?'none':(hasEntries?'none':'block');
+  document.getElementById('cw').style.display=(s||hasEntries)?'block':'none';
+  if(!s)return;
+  document.getElementById('r-inv').textContent=brl(s.ti);
+  document.getElementById('r-n').textContent=entries.length+' '+(entries.length===1?'aporte':'aportes');
+  document.getElementById('r-cotas').textContent=s.tc.toFixed(4);
+  document.getElementById('r-pm').textContent='PM: R$'+s.avg.toFixed(2).replace('.',',');
+  document.getElementById('r-val').textContent=brl(s.cv);
+  const gc=s.gain>=0?'var(--g)':'var(--red)';
+  document.getElementById('r-gl').innerHTML=`<span style="color:${gc};">${s.gain>=0?'+':''}${brl(s.gain)} (${s.gainP>=0?'+':''}${s.gainP.toFixed(1).replace('.',',')}%)</span>`;
+  document.getElementById('r-renda').textContent=brl(s.renda,2)+'/mês';
+  document.getElementById('r-ini').textContent=MS[s.first.month-1]+'/'+s.first.year;
+  const yy=Math.floor(s.mo/12),mm2=s.mo%12;
+  document.getElementById('r-tempo').textContent=s.mo>0?(yy>0?yy+'a ':'')+mm2+'m':'mês atual';
+  document.getElementById('r-yoc').textContent=s.yoc.toFixed(2).replace('.',',')+' %';
+  const pp=Math.min(100,s.renda/meta*100);
+  document.getElementById('cur-mpct').textContent=pp.toFixed(1).replace('.',',')+' %';
+  document.getElementById('cur-mfill').style.width=pp+'%';
+  document.getElementById('cur-mfill').style.background=pp>=100?'var(--g)':'var(--amber)';
+  document.getElementById('cur-mtxt').textContent='Renda atual: '+brl(s.renda,2)+'/mês — meta: '+brl(meta)+'/mês';
+  const apt=+document.getElementById('s-apt').value||0;
+  const reinvPct=(+document.getElementById('s-reinv').value||100)/100;
+  const tb=document.getElementById('tempo-box');
+  if(s.renda>=meta){tb.innerHTML=`<strong style="color:var(--g);">Meta já atingida!</strong> Renda atual de ${brl(s.renda,2)}/mês supera a meta de ${brl(meta)}/mês.`;tb.className='info-box green';tb.style.display='block';}
+  else if(apt>0||reinvPct>0){
+    let meses=0,c=s.tc;
+    while(c*fiiP*dyM<meta&&meses<600){c+=(c*dyM*reinvPct)+(apt/fiiP);meses++;}
+    const anos2=Math.floor(meses/12),m2=meses%12;
+    const dtAlvo=mAdd(NOW.y,NOW.m,meses);
+    tb.innerHTML=`<strong>Previsão para atingir ${brl(meta)}/mês:</strong> ~${anos2>0?anos2+'a ':''} ${m2}m (${MS[dtAlvo.m-1]}/${dtAlvo.y}), aportando ${brl(apt)}/mês e reinvestindo ${Math.round(reinvPct*100)}% dos dividendos.`;
+    tb.className='info-box amber';tb.style.display='block';
+  }else{tb.style.display='none';}
+}
+
+function buildCmp(){
+  if(!fiiP||!dyM)return;
+  const apt=+document.getElementById('s-apt').value||0;
+  const anos=+document.getElementById('s-anos').value||20;
+  const s=calcStats();const base=s?s.tc:0;
+  const steps=[1,3,5,10,anos].filter((v,i,a)=>a.indexOf(v)===i&&v<=anos);
+  const ivD=[],fixD=[],lbls=[];
+  let cR=base,cF=base;
+  for(let m=1;m<=anos*12;m++){cR+=cR*dyM;if(apt>0){cR+=apt/fiiP;cF+=apt/fiiP;}if(m%12===0){lbls.push('Ano '+(m/12));ivD.push(parseFloat((cR*fiiP*dyM).toFixed(2)));fixD.push(parseFloat((cF*fiiP*dyM).toFixed(2)));}}
+  const mData=steps.map(yr=>{let c1=base,c2=base;for(let m=1;m<=yr*12;m++){c1+=c1*dyM;if(apt>0){c1+=apt/fiiP;c2+=apt/fiiP;}}return{yr,r:Math.round(c1*fiiP*dyM),f:Math.round(c2*fiiP*dyM)};});
+  document.getElementById('cmp-grid').innerHTML=`
+    <div class="cmp-card rv"><div class="cmp-tit">Reinvestindo dividendos</div>${mData.map((m,i)=>`<div class="mile"><span class="yr">${i===mData.length-1?'Ano '+m.yr+' (final)':'Ano '+m.yr}</span><span class="vl" style="color:var(--g);">${brl(m.r)}/mês</span></div>`).join('')}</div>
+    <div class="cmp-card fx"><div class="cmp-tit">Só aporte fixo</div>${mData.map((m,i)=>`<div class="mile"><span class="yr">${i===mData.length-1?'Ano '+m.yr+' (final)':'Ano '+m.yr}</span><span class="vl" style="color:var(--t1);">${brl(m.f)}/mês</span></div>`).join('')}</div>`;
+  if(cmpC){cmpC.data.labels=lbls;cmpC.data.datasets[0].data=ivD;cmpC.data.datasets[1].data=fixD;cmpC.update('none');return;}
+  cmpC=new Chart(document.getElementById('cmp-chart'),{type:'line',data:{labels:lbls,datasets:[{label:'Reinvestindo',data:ivD,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.07)',tension:.4,pointRadius:2,fill:true},{label:'Só aporte fixo',data:fixD,borderColor:'#60a5fa',backgroundColor:'transparent',tension:.4,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+brl(c.raw)+'/mês'}}},scales:{x:{ticks:{color:'#4e5769',font:{size:11}},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#4e5769',font:{size:11},callback:v=>v>=1000?'R$'+(v/1000).toFixed(0)+'k':'R$'+v},grid:{color:'rgba(255,255,255,.03)'}}}}});
+}
+
+function buildMain(){
+  if(!fiiP||!dyM||!cdiA)return;
+  const apt=+document.getElementById('s-apt').value||0;
+  const anos=+document.getElementById('s-anos').value||20;
+  const meta=+document.getElementById('s-meta').value||5000;
+  const reinvP=(+document.getElementById('s-reinv').value||100)/100;
+  const cdiNetM=Math.pow(1+cdiA*.85/100,1/12)-1;
+  const hL=[],hV=[],hC=[];
+  let cc=0,cCDI=0;
+  if(entries.length){
+    let cy=entries[0].year,cm=entries[0].month;
+    while(mk(cy,cm)<=mk(NOW.y,NOW.m)){
+      if(hL.length>0)cCDI*=(1+cdiNetM);
+      const k=mk(cy,cm);entries.filter(e=>mk(e.year,e.month)===k).forEach(e=>{cc+=e.cotas;cCDI+=e.invested;});
+      hL.push(MS[cm-1]+'/'+String(cy).slice(-2));hV.push(Math.round(cc*fiiP));hC.push(Math.round(cCDI));
+      const nx=mAdd(cy,cm,1);cy=nx.y;cm=nx.m;
+    }
+  }
+  const pL=[],pV=[],pC=[];let pcc=cc,pCv=hC.length?hC[hC.length-1]:0;
+  for(let i=1;i<=anos*12;i++){pcc+=pcc*dyM*reinvP;if(apt>0){pcc+=apt/fiiP;pCv+=apt;}pCv*=(1+cdiNetM);if(i%6===0){const n=mAdd(NOW.y,NOW.m,i);pL.push(MS[n.m-1]+'/'+String(n.y).slice(-2));pV.push(Math.round(pcc*fiiP));pC.push(Math.round(pCv));}}
+  const fPat=Math.round(pcc*fiiP),fR=Math.round(pcc*fiiP*dyM);
+  document.getElementById('proj-lbl').textContent=anos;document.getElementById('proj-ano').textContent=NOW.y+anos;
+  document.getElementById('p-pat').textContent=brl(fPat);document.getElementById('p-pat-r').textContent='≈ '+brl(Math.round(fPat/Math.pow(1.045,anos)))+' hoje';
+  document.getElementById('p-cotas').textContent=Math.round(pcc).toLocaleString('pt-BR');
+  document.getElementById('p-renda').textContent=brl(fR)+'/mês';document.getElementById('p-renda-r').textContent='≈ '+brl(Math.round(fR/Math.pow(1.045,anos)))+'/mês hoje';
+  const pm=Math.min(100,Math.round(fR/meta*100));
+  document.getElementById('proj-mpct').textContent=pm+'%';document.getElementById('proj-mfill').style.width=pm+'%';document.getElementById('proj-mfill').style.background=pm>=100?'#22c55e':'#fbbf24';
+  document.getElementById('proj-mtxt').textContent=pm>=100?'Meta atingida! Projetado '+brl(fR)+'/mês em '+anos+' anos.':'Projetado '+brl(fR)+'/mês — faltam '+brl(meta-fR)+'/mês.';
+  const allL=[...hL,...pL];const dH=[...hV,...new Array(pL.length).fill(null)];const lH=hV.length?hV[hV.length-1]:null;
+  const dP=[...new Array(Math.max(0,hL.length-1)).fill(null),lH,...pV];const dC=[...hC,...pC];const dM=allL.map(()=>Math.round(meta/dyM));
+  if(mainC){mainC.data.labels=allL;mainC.data.datasets[0].data=dH;mainC.data.datasets[1].data=dP;mainC.data.datasets[2].data=dC;mainC.data.datasets[3].data=dM;mainC.update('none');return;}
+  mainC=new Chart(document.getElementById('main-chart'),{type:'line',data:{labels:allL,datasets:[{label:'Real',data:dH,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.07)',tension:.35,pointRadius:2,fill:true,spanGaps:false},{label:'Projeção',data:dP,borderColor:'#22c55e',backgroundColor:'transparent',tension:.35,pointRadius:2,borderDash:[5,4],spanGaps:false},{label:'CDI líq.',data:dC,borderColor:'#60a5fa',backgroundColor:'transparent',tension:.35,pointRadius:1,borderWidth:1.5},{label:'Meta',data:dM,borderColor:'#f472b6',backgroundColor:'transparent',pointRadius:0,borderDash:[6,4],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw===null?'':c.dataset.label+': '+brl(c.raw)}}},scales:{x:{ticks:{color:'#4e5769',font:{size:10},maxRotation:45,maxTicksLimit:14},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#4e5769',font:{size:11},callback:v=>v===null?'':v>=1e6?'R$'+(v/1e6).toFixed(1)+'M':v>=1e3?'R$'+(v/1e3).toFixed(0)+'k':'R$'+v},grid:{color:'rgba(255,255,255,.03)'}}}}});
+}
+
+function upd(){
+  const apt=+document.getElementById('s-apt').value||0;
+  const anos=+document.getElementById('s-anos').value||20;
+  const meta=+document.getElementById('s-meta').value||5000;
+  const reinv=+document.getElementById('s-reinv').value||100;
+  document.getElementById('s-apt-o').textContent=brl(apt);
+  document.getElementById('s-anos-o').textContent=anos+' anos';
+  document.getElementById('s-meta-o').textContent=brl(meta);
+  document.getElementById('s-reinv-o').textContent=reinv+' %';
+  updateStats(meta);updateNextDiv();buildCmp();buildMain();
+}
+
+function renderAll(){renderHist();upd();}
+
+async function fetchFII(){
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,tools:[{type:'web_search_20250305',name:'web_search'}],system:'Responda APENAS JSON sem markdown: {"mxrf11":{"preco":number,"dy_mensal_pct":number,"ultimo_div":number},"taxas":{"cdi_aa":number,"selic_aa":number}}',messages:[{role:'user',content:'Dados de hoje 26/03/2026: preço exato cota MXRF11 na B3 agora, DY mensal em % mais recente, último dividendo pago em R$ por cota, CDI anual % e Selic anual % Brasil.'}]})});
+    const d=await res.json();
+    const txt=d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const mm=txt.match(/\{[\s\S]*?\}/);
+    if(!mm)throw new Error('no json');
+    const p=JSON.parse(mm[0]);
+    if(!p.mxrf11?.preco||p.mxrf11.preco<=0)throw new Error('bad price');
+    fiiP=p.mxrf11.preco;
+    dyM=p.mxrf11.dy_mensal_pct/100;
+    cdiA=p.taxas?.cdi_aa||10.5;
+    apiOk=true;
+    document.getElementById('api-alert').style.display='none';
+    document.getElementById('manual-box').style.display='none';
+    document.getElementById('data-src').textContent='tempo real';
+    document.getElementById('upd-ts').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('src2').textContent='';
+    refreshDisplay();
+  }catch(e){
+    apiOk=false;
+    if(fiiP===null){
+      fiiP=9.81;dyM=0.0105;cdiA=10.5;
+    }
+    document.getElementById('api-alert').style.display='flex';
+    document.getElementById('api-alert-msg').textContent='Não foi possível buscar dados em tempo real. Verifique ou corrija os valores manualmente.';
+    document.getElementById('data-src').textContent='dados manuais';
+    document.getElementById('src2').textContent='Clique em "Editar" para corrigir os valores';
+    refreshDisplay();
+  }
+}
+
+async function doRefresh(){
+  const b=document.getElementById('btn-ref');
+  b.disabled=true;b.textContent='Buscando...';
+  await fetchFII();renderAll();
+  b.disabled=false;b.textContent='Atualizar';
+}
+
+async function init(){
+  const d=new Date(2026,2,26);
+  document.getElementById('hdr-date').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  await loadStorage();
+  await fetchFII();
+  setupForm();renderAll();
+  document.getElementById('lw').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+init();
+</script>
