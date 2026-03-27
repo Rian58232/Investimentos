@@ -2,7 +2,7 @@
 // Deploy em: https://workers.cloudflare.com
 // Adicione a variável de ambiente: API_KEY = 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
 
-const ALLOWED_ORIGIN = https://investimentos.rian1-meliodas.workers.dev
+const ALLOWED_ORIGIN = "https://investimentos.rian1-meliodas.workers.dev";
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request));
