@@ -590,8 +590,7 @@ async function fetchFII() {
     document.getElementById('data-src').textContent = 'tempo real';
     document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     refreshDisplay();
-
-  } catch(e) {
+    catch(e) {
     console.error('Falha na atualização:', e);
     apiOk = false;
     // Valores padrão de segurança caso a API falhe
