@@ -542,6 +542,7 @@ function renderAll() {
 
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
+  
   try {
     const resposta = await fetch(proxy, {
       method: 'POST',
@@ -553,47 +554,34 @@ async function fetchFII() {
         messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
       })
     });
+
     if (!resposta.ok) throw new Error('Erro:' + resposta.status);
+
     const dadosBrutos = await resposta.json();
     const textoAI = dadosBrutos.content[0].text;
     const mm = textoAI.match(/\{[\s\S]*?\}/);
+    
     if (!mm) throw new Error('JSON não encontrado');
-    const p = JSON.parse(mm[0]);
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    refreshDisplay();
-  } catch(e) {
-    console.error('Erro na API:', e);
-    apiOk = false;
-    document.getElementById('api-alert').style.display = 'flex';
-    refreshDisplay();
-    
-    // 2. O Claude retorna um array 'content'. Vamos pegar o texto dele:
-    const txt = d.content.find(b => b.type === 'text').text;
-    const mm = txt.match(/\{[\s\S]*?\}/);
-    if(!mm) throw new Error('JSON não encontrado na resposta');
     
     const p = JSON.parse(mm[0]);
 
-    // 3. Atualiza as variáveis globais do sistema
+    // Atualiza os dados
     fiiP = p.mxrf11.preco;
     dyM = p.mxrf11.dy_mensal_pct / 100;
     cdiA = p.taxas?.cdi_aa || 10.5;
     apiOk = true;
 
-    // 4. Atualiza a interface
+    // Atualiza a tela
     document.getElementById('api-alert').style.display = 'none';
     document.getElementById('data-src').textContent = 'tempo real';
     document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    
     refreshDisplay();
-    catch(e) {
-    console.error('Falha na atualização:', e);
+
+  catch(e) {
+    console.error('Erro na API:', e);
     apiOk = false;
-    // Valores padrão de segurança caso a API falhe
+    // Valores padrão caso a API falhe
     if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
     document.getElementById('api-alert').style.display = 'flex';
     document.getElementById('data-src').textContent = 'dados manuais';
