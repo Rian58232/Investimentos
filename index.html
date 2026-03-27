@@ -532,12 +532,10 @@ function upd(){
 function renderAll(){renderHist();upd();}
 
 async function fetchFII() {
-    // Tenta usar a URL do proxy salva, senão usa a padrão
     const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
 
     try {
         console.log("Iniciando busca de dados...");
-
         const resposta = await fetch(proxy, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -549,6 +547,67 @@ async function fetchFII() {
             })
         });
 
+        if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
+
+        const dadosBrutos = await resposta.json();
+        const textoAI = dadosBrutos.content[0].text;
+        const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
+        
+        if (!jsonMatch) throw new Error('JSON não encontrado');
+        
+        const p = JSON.parse(jsonMatch[0]);
+
+        fiiP = p.mxrf11.preco;
+        dyM = p.mxrf11.dy_mensal_pct / 100;
+        cdiA = p.taxas?.cdi_aa || 10.5;
+        apiOk = true;
+
+        document.getElementById('api-alert').style.display = 'none';
+        document.getElementById('data-src').textContent = 'tempo real';
+        document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
+        
+        refreshDisplay();
+
+    } catch (erro) {
+        console.error('Falha na atualização:', erro);
+        apiOk = false;
+        if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
+        document.getElementById('api-alert').style.display = 'flex';
+        document.getElementById('data-src').textContent = 'dados manuais';
+        refreshDisplay();
+    }
+}
+
+        if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
+
+        const dadosBrutos = await resposta.json();
+        const textoAI = dadosBrutos.content[0].text;
+        const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
+        
+        if (!jsonMatch) throw new Error('JSON não encontrado');
+        
+        const p = JSON.parse(jsonMatch[0]);
+
+        fiiP = p.mxrf11.preco;
+        dyM = p.mxrf11.dy_mensal_pct / 100;
+        cdiA = p.taxas?.cdi_aa || 10.5;
+        apiOk = true;
+
+        document.getElementById('api-alert').style.display = 'none';
+        document.getElementById('data-src').textContent = 'tempo real';
+        document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
+        
+        refreshDisplay();
+
+    } catch (erro) {
+        console.error('Falha na atualização:', erro);
+        apiOk = false;
+        if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
+        document.getElementById('api-alert').style.display = 'flex';
+        document.getElementById('data-src').textContent = 'dados manuais';
+        refreshDisplay();
+    }
+}
         if (!resposta.ok) {
             const txtErro = await resposta.text();
             throw new Error('Erro no Worker: ' + resposta.status + ' - ' + txtErro);
