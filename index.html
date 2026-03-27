@@ -531,13 +531,9 @@ function upd(){
 }
 function renderAll(){renderHist();upd();}
 
-// O erro acontece se estiver apenas "function fetchFII()"
-// A correção é adicionar o "async" antes:
-// A palavra 'async' ANTES de 'function' é o que resolve o seu erro
-// A palavra 'async' ANTES de 'function' é o que resolve o seu erro
-// O "async" aqui é obrigatório para o "await" funcionar lá embaixo
 async function fetchFII() {
-    const proxy = 'https://investimentos.rian1-meliodas.workers.dev';
+    // Tenta usar a URL do proxy salva, senão usa a padrão
+    const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
 
     try {
         console.log("Iniciando busca de dados...");
@@ -559,8 +555,6 @@ async function fetchFII() {
         }
 
         const dadosBrutos = await resposta.json();
-        
-        // Acessando o texto dentro da estrutura da Anthropic
         const textoAI = dadosBrutos.content[0].text;
         const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
         
@@ -568,116 +562,29 @@ async function fetchFII() {
         
         const p = JSON.parse(jsonMatch[0]);
 
-        // Atualizando as variáveis do seu gráfico/tabela
+        // Atualiza as variáveis globais
         fiiP = p.mxrf11.preco;
         dyM = p.mxrf11.dy_mensal_pct / 100;
         cdiA = p.taxas?.cdi_aa || 10.5;
         apiOk = true;
 
-        // Atualizando a interface
+        // Atualiza a interface
         document.getElementById('api-alert').style.display = 'none';
         document.getElementById('data-src').textContent = 'tempo real';
         document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
         
-        // Chama a sua função de desenhar o gráfico (verifique se o nome é esse mesmo)
-        if (typeof refreshDisplay === 'function') refreshDisplay();
+        refreshDisplay();
 
     } catch (erro) {
         console.error('Falha na atualização:', erro);
         apiOk = false;
+        // Valores padrão caso a API falhe
+        if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
         document.getElementById('api-alert').style.display = 'flex';
-        // Se houver erro, tenta atualizar a tela com os dados que já existem
-        if (typeof refreshDisplay === 'function') refreshDisplay();
+        document.getElementById('data-src').textContent = 'dados manuais';
+        refreshDisplay();
     }
-} // <--- Certifique-se de que esta chave fecha a função corretamente
-
-    if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-    
-    const dados = await resposta.json();
-    
-    // Pegando o texto e tratando o JSON
-    const textoAI = dados.content[0].text;
-    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-    if (!jsonMatch) throw new Error('JSON não encontrado');
-    
-    const p = JSON.parse(jsonMatch[0]);
-
-    // Atualiza as variáveis do seu sistema
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-
-    // Atualiza a tela
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-    
-    if (typeof refreshDisplay === 'function') refreshDisplay();
-
-  } catch (e) {
-    console.error('Falha na atualização:', e);
-    apiOk = false;
-    document.getElementById('api-alert').style.display = 'flex';
-    if (typeof refreshDisplay === 'function') refreshDisplay();
-  }
 }
-
-    if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-    
-    const dados = await resposta.json();
-    
-    // Pegando o texto e tratando o JSON
-    const textoAI = dados.content[0].text;
-    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-    if (!jsonMatch) throw new Error('JSON não encontrado');
-    
-    const p = JSON.parse(jsonMatch[0]);
-
-    // Atualiza as variáveis do seu sistema
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-
-    // Atualiza a tela
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-    
-    if (typeof refreshDisplay === 'function') refreshDisplay();
-
-  } catch (e) {
-    console.error('Falha na atualização:', e);
-    apiOk = false;
-    document.getElementById('api-alert').style.display = 'flex';
-    if (typeof refreshDisplay === 'function') refreshDisplay();
-  }
-}
-
-    if(!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-    
-    const dados = await resposta.json();
-    
-    // Pegando o texto da resposta do Claude
-    const textoAI = dados.content[0].text;
-    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-    if(!jsonMatch) throw new Error('JSON não encontrado');
-    
-    const p = JSON.parse(jsonMatch[0]);
-
-    // Atualiza as variáveis que o seu gráfico usa
-    fiiP = p.mxrf11.preco;
-    dyM = p.mxrf11.dy_mensal_pct / 100;
-    cdiA = p.taxas?.cdi_aa || 10.5;
-    apiOk = true;
-
-    // Atualiza a interface
-    document.getElementById('api-alert').style.display = 'none';
-    document.getElementById('data-src').textContent = 'tempo real';
-    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-    
-    // Chama a função que desenha o gráfico/tabela
     refreshDisplay();
 
   } catch(e) {
