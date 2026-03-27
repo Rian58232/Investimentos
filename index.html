@@ -586,8 +586,7 @@ async function fetchFII() {
     }
 }
     refreshDisplay();
-
-  } catch(e) {
+  catch(e) {
     console.error('Falha na atualização:', e);
     apiOk = false;
     document.getElementById('api-alert').style.display = 'flex';
