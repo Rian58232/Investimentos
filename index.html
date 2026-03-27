@@ -584,11 +584,15 @@ async function fetchFII() {
 }
 
 function init(){
-  const d=new Date(2026,2,26);
-  document.getElementById('hdr-date').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const proxy=getProxyUrl();
-  if(!proxy)document.getElementById('setup-banner').style.display='block';
-  loadData();setupForm();
+  const d = new Date(); // <-- APAGUE OS NÚMEROS AQUI! Deixe vazio.
+  
+  document.getElementById('hdr-date').textContent = d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  
+  const proxy = getProxyUrl();
+  if(!proxy) document.getElementById('setup-banner').style.display='block';
+  
+  loadData();
+  setupForm();
   fetchFII().then(()=>{renderAll();});
 }
 init();
