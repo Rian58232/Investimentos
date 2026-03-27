@@ -549,28 +549,38 @@ function renderAll() {
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
   
-  // ADICIONAMOS O TRY AQUI
   try {
-    // Atenção: A lógica que de fato faz o "fetch" (a requisição para a API)
-    // sumiu do seu código original! Você precisará colocar ela aqui.
+    // 1. Vai até a sua API na internet buscar os dados
+    const resposta = await fetch(proxy);
     
+    // 2. Se a API estiver fora do ar, ele força um erro para ir pro "catch"
+    if (!resposta.ok) throw new Error('API fora do ar ou erro no Worker');
+    
+    const dados = await resposta.json();
+    
+    // 3. Pega os dados que a API devolveu e salva nas suas variáveis
+    // (Ajuste 'preco', 'dy' e 'cdi' se o seu Worker usar nomes diferentes no JSON)
+    if (dados.preco) fiiP = parseFloat(dados.preco);
+    if (dados.dy) dyM = parseFloat(dados.dy);
+    if (dados.cdi) cdiA = parseFloat(dados.cdi);
+    
+    apiOk = true;
+    document.getElementById('api-alert').style.display = 'none';
+    document.getElementById('data-src').textContent = 'dados reais da API';
     refreshDisplay();
   
-  } catch(e) { // AGORA O CATCH VAI FUNCIONAR
+  } catch(e) { 
+    // SE DER QUALQUER ERRO NA INTERNET OU NA API, ELE CAI AQUI E SALVA SUA PELE
     console.error('Erro na API:', e);
     apiOk = false;
+    
+    // Carrega os valores manuais para a tela não ficar com "—"
     if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
+    
     document.getElementById('api-alert').style.display = 'flex';
     document.getElementById('data-src').textContent = 'dados manuais';
     refreshDisplay();
   }
-} // <--- ESSA CHAVE FECHA A FETCHFII
-
-async function doRefresh(){ 
-  const b=document.getElementById('btn-ref');
-  b.disabled=true;b.textContent='Buscando...';
-  await fetchFII();renderAll();
-  b.disabled=false;b.textContent='Atualizar';
 }
 
 function init(){
