@@ -540,11 +540,23 @@ function renderAll() {
   if (typeof upd === 'function') upd();
 }
 
+// Remova a duplicação do renderAll e deixe apenas uma vez:
+function renderAll() {
+  if (typeof renderHist === 'function') renderHist();
+  if (typeof upd === 'function') upd();
+}
+
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
- refreshDisplay();
   
-  } catch(e) {
+  // ADICIONAMOS O TRY AQUI
+  try {
+    // Atenção: A lógica que de fato faz o "fetch" (a requisição para a API)
+    // sumiu do seu código original! Você precisará colocar ela aqui.
+    
+    refreshDisplay();
+  
+  } catch(e) { // AGORA O CATCH VAI FUNCIONAR
     console.error('Erro na API:', e);
     apiOk = false;
     if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
@@ -554,8 +566,7 @@ async function fetchFII() {
   }
 } // <--- ESSA CHAVE FECHA A FETCHFII
 
-async function doRefresh(){ // <--- AQUI COMEÇA A PRÓXIMA
-  
+async function doRefresh(){ 
   const b=document.getElementById('btn-ref');
   b.disabled=true;b.textContent='Buscando...';
   await fetchFII();renderAll();
