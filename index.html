@@ -534,6 +534,7 @@ function renderAll(){renderHist();upd();}
 // O erro acontece se estiver apenas "function fetchFII()"
 // A correção é adicionar o "async" antes:
 // A palavra 'async' ANTES de 'function' é o que resolve o seu erro
+// A palavra 'async' ANTES de 'function' é o que resolve o seu erro
 async function fetchFII() {
   const proxy = 'https://investimentos.rian1-meliodas.workers.dev'; 
 
@@ -548,6 +549,38 @@ async function fetchFII() {
         messages: [{ role: 'user', content: 'Preço MXRF11 hoje e CDI anual Brasil.' }]
       })
     });
+
+    if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
+    
+    const dados = await resposta.json();
+    
+    // Pegando o texto e tratando o JSON
+    const textoAI = dados.content[0].text;
+    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
+    if (!jsonMatch) throw new Error('JSON não encontrado');
+    
+    const p = JSON.parse(jsonMatch[0]);
+
+    // Atualiza as variáveis do seu sistema
+    fiiP = p.mxrf11.preco;
+    dyM = p.mxrf11.dy_mensal_pct / 100;
+    cdiA = p.taxas?.cdi_aa || 10.5;
+    apiOk = true;
+
+    // Atualiza a tela
+    document.getElementById('api-alert').style.display = 'none';
+    document.getElementById('data-src').textContent = 'tempo real';
+    document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
+    
+    if (typeof refreshDisplay === 'function') refreshDisplay();
+
+  } catch (e) {
+    console.error('Falha na atualização:', e);
+    apiOk = false;
+    document.getElementById('api-alert').style.display = 'flex';
+    if (typeof refreshDisplay === 'function') refreshDisplay();
+  }
+}
 
     if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
     
