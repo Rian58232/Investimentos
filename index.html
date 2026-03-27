@@ -535,7 +535,11 @@ function renderAll() {
   if (typeof upd === 'function') upd();
 }
 
-// 2. Função de Busca (Async)
+function renderAll() {
+  if (typeof renderHist === 'function') renderHist();
+  if (typeof upd === 'function') upd();
+}
+
 async function fetchFII() {
   const proxy = getProxyUrl() || 'https://investimentos.rian1-meliodas.workers.dev';
 
@@ -556,22 +560,24 @@ async function fetchFII() {
 
     const dadosBrutos = await resposta.json();
     const textoAI = dadosBrutos.content[0].text;
-    const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
+    const mm = textoAI.match(/\{[\s\S]*?\}/);
     
-    if (!jsonMatch) throw new Error('JSON não encontrado');
+    if (!mm) throw new Error('JSON não encontrado');
     
-    const p = JSON.parse(jsonMatch[0]);
+    const p = JSON.parse(mm[0]);
 
+    // Atualiza as variáveis globais
     fiiP = p.mxrf11.preco;
     dyM = p.mxrf11.dy_mensal_pct / 100;
     cdiA = p.taxas?.cdi_aa || 10.5;
     apiOk = true;
 
+    // Atualiza a interface
     document.getElementById('api-alert').style.display = 'none';
     document.getElementById('data-src').textContent = 'tempo real';
     document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     
-    if (typeof refreshDisplay === 'function') refreshDisplay();
+    refreshDisplay();
 
   } catch(e) {
     console.error('Falha na atualização:', e);
@@ -579,95 +585,9 @@ async function fetchFII() {
     if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
     document.getElementById('api-alert').style.display = 'flex';
     document.getElementById('data-src').textContent = 'dados manuais';
-    if (typeof refreshDisplay === 'function') refreshDisplay();
+    refreshDisplay();
   }
 }
-
-        if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-
-        const dadosBrutos = await resposta.json();
-        const textoAI = dadosBrutos.content[0].text;
-        const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-        
-        if (!jsonMatch) throw new Error('JSON não encontrado');
-        
-        const p = JSON.parse(jsonMatch[0]);
-
-        fiiP = p.mxrf11.preco;
-        dyM = p.mxrf11.dy_mensal_pct / 100;
-        cdiA = p.taxas?.cdi_aa || 10.5;
-        apiOk = true;
-
-        document.getElementById('api-alert').style.display = 'none';
-        document.getElementById('data-src').textContent = 'tempo real';
-        document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-        
-        refreshDisplay();
-
-    } catch (erro) {
-        console.error('Falha na atualização:', erro);
-        apiOk = false;
-        if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
-        document.getElementById('api-alert').style.display = 'flex';
-        document.getElementById('data-src').textContent = 'dados manuais';
-        refreshDisplay();
-    }
-}
-
-        if (!resposta.ok) throw new Error('Erro no Worker: ' + resposta.status);
-
-        const dadosBrutos = await resposta.json();
-        const textoAI = dadosBrutos.content[0].text;
-        const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-        
-        if (!jsonMatch) throw new Error('JSON não encontrado');
-        
-        const p = JSON.parse(jsonMatch[0]);
-
-        fiiP = p.mxrf11.preco;
-        dyM = p.mxrf11.dy_mensal_pct / 100;
-        cdiA = p.taxas?.cdi_aa || 10.5;
-        apiOk = true;
-
-        document.getElementById('api-alert').style.display = 'none';
-        document.getElementById('data-src').textContent = 'tempo real';
-        document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-        
-        refreshDisplay();
-
-    } catch (erro) {
-        console.error('Falha na atualização:', erro);
-        apiOk = false;
-        if(fiiP === null) { fiiP = 9.81; dyM = 0.0105; cdiA = 10.5; }
-        document.getElementById('api-alert').style.display = 'flex';
-        document.getElementById('data-src').textContent = 'dados manuais';
-        refreshDisplay();
-    }
-}
-        if (!resposta.ok) {
-            const txtErro = await resposta.text();
-            throw new Error('Erro no Worker: ' + resposta.status + ' - ' + txtErro);
-        }
-
-        const dadosBrutos = await resposta.json();
-        const textoAI = dadosBrutos.content[0].text;
-        const jsonMatch = textoAI.match(/\{[\s\S]*?\}/);
-        
-        if (!jsonMatch) throw new Error('JSON não encontrado na resposta');
-        
-        const p = JSON.parse(jsonMatch[0]);
-
-        // Atualiza as variáveis globais
-        fiiP = p.mxrf11.preco;
-        dyM = p.mxrf11.dy_mensal_pct / 100;
-        cdiA = p.taxas?.cdi_aa || 10.5;
-        apiOk = true;
-
-        // Atualiza a interface
-        document.getElementById('api-alert').style.display = 'none';
-        document.getElementById('data-src').textContent = 'tempo real';
-        document.getElementById('upd-ts').textContent = new Date().toLocaleTimeString('pt-BR');
-        
         refreshDisplay();
 
     } catch (erro) {
